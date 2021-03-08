@@ -7,4 +7,4 @@ and export the corresponding audio file (mp3 format converted from MIDI using [t
 
 The first use case is to be able to generate random scores with a given level of difficulty for both note range and rythm pattern.
 An example can be found [here](example_random_score.py), producing this score:
-![image](example.jpb)
+![image](example.jpg)
