@@ -4,7 +4,7 @@ from numpy import random as rnd
 
 class sheet:
 
-    def __init__(self, score=''):
+    def __init__(self, score='', title=''):
 
         self.body = ''
         self.preamble = r'''
@@ -14,25 +14,33 @@ class sheet:
         #(set-global-staff-size 20)
         
         \header {
-        title = "Exercice de Lecture Clé de Fa"
-        subtitle = " "
-        composer = "Romain Madar"
-        arranger = " "
+        '''
+        if title:
+            self.preamble += 'title = "{}"'.format(title)
+
+        self.preamble += '''
+          subtitle = " "
+          composer = "Romain Madar"
+          arranger = " "
+          tagline  = ""
         }
         
         \layout {
-        indent = 0\cm
-        \context {
-        \Score
-        \override SpacingSpanner.base-shortest-duration = #(ly:make-moment 1/16)
-        }
+          indent = 0\cm
+          \context {
+           \Score
+           \override SpacingSpanner.base-shortest-duration = #(ly:make-moment 1/16)
+          }
         }
         
         \paper {
-        top-margin = 20
-        bottom-margin = 20
-        left-margin = 15
-        right-margin = 15
+          top-margin = 20
+          bottom-margin = 20
+          left-margin = 15
+          right-margin = 15
+          system-system-spacing.basic-distance = #15
+          score-markup-spacing.basic-distance  = #25
+          score-system-spacing.basic-distance  = #25
         }
         '''
 
@@ -46,6 +54,7 @@ class sheet:
 
     def lylipond_file(self, fname):
         f = open(fname, 'w')
+        f.write(self.preamble)
         f.write(self.body)
         f.close()
         
@@ -60,39 +69,57 @@ class sheet:
 
 
 class score:
-    def __init__(self, staffs):
+    def __init__(self, staffs, title=''):
         self.body = '\\score {\n'
         for s in staffs:
             self.body += s.body
+
+        if title:
+            self.body += '\\header {'
+            self.body += 'piece = "{}"'.format(title)
+            self.body +='}'
+
         self.body += '''
         \layout { }
         \midi {
         }
         }
         '''
+        
 
 class staff:
     
-    def __init__(self, notes):
+    def __init__(self, notes, clef='bass', time='4/4',
+                 tempo='4=90', midi=None):
         '''
-        Notes is a string following lylipond notation.
+        Arguments:
+        ----------
+          - 'notes' [string]: music following lylipond notation.
+          - 'clef'  [string]: clef for this staff (drum will create a 'DrumStaff')
+          - 'time'  [string]: time signature of the staff (e.g. 4/4)
+          - 'tempo' [string]: tempo for the staff (e.g. 4=90)
+          - 'midi'  [string]: midi instrument 
         '''
 
-        self.clef  = 'bass'
-        self.time  = '4/4'
-        self.tempo = '4 = 90'
-        self.midi  = 'electric bass (finger)'
+        self.clef  = clef
+        self.time  = time
+        self.tempo = tempo
+        self.midi  = midi
         
-        txt = '''
-        \t\\new Staff
+        txt = '\t\\new Staff'
+        if clef.lower() == 'drum':
+            txt = '\t\\new DrumStaff'
+        txt += ''' 
         \t{
         \t\t
         \\numericTimeSignature
         '''
-        txt += '\t\t \\clef {}\n'.format(self.clef)
+        if clef.lower() != 'drum':
+            txt += '\t\t \\clef {}\n'.format(self.clef)
         txt += '\t\t \\time {}\n'.format(self.time)
         txt += '\t\t \\tempo {}\n'.format(self.tempo)
-        txt += '\t\t \\set Staff.midiInstrument = #"{}"\n'.format(self.midi)
+        if midi:
+            txt += '\t\t \\set Staff.midiInstrument = #"{}"\n'.format(self.midi)
         txt += '''
         \\override Score.BarNumber.break-visibility = ##(#t #t #t)
         \t\t{
@@ -141,10 +168,41 @@ notes = [
     'b\'',
 ]
 
+# Store all possibilities from 16-th notes
+rythm_pattern_16th = {
 
-temps_pattern = [
+    # 1 note
+    '1 note - A': ['4'                         ],
+    '1 note - B': ['r16', '16'  , 'r16', 'r16' ],
+    '1 note - C': ['r8' , '8'                  ],
+    '1 note - D': ['r16', 'r16' , 'r16', '16'  ],
+
+    # 2 notes
+    '2 notes - A ': ['r8' , '16' , '16'        ],
+    '2 notes - B1': ['16' , '16' , 'r8'        ],
+    '2 notes - B2': ['16' , '8.'               ],
+    '2 notes - B3': ['16' , '8'  , 'r16'       ],
+    '2 notes - C1': ['r16', '16' , '16' , 'r16'],
+    '2 notes - C2': ['r16', '16' , '8'  ,      ],
+    '2 notes - D ': ['8'  , '8'                ],
+    '2 notes - E1': ['16' , 'r8' , '16'        ],
+    '2 notes - E2': ['8'  , 'r16', '16'        ],
+    '2 notes - E3': ['8.' , '16'               ],
+    '2 notes - F1': ['r16', '16' , 'r16', '16' ],
+    '2 notes - F2': ['r16', '8'  , '16'        ],
+
+    # 3 notes
+    '3 notes - A1': ['16' , '16' , '16' , 'r16'],
+    '3 notes - A2': ['16' , '16' , '8'         ],
+    '3 notes - B1': ['16' , 'r16', '16' , '16' ],
+    '3 notes - B2': ['8'  , '16' , '16'        ],
+    '3 notes - C1': ['16' , '16' , 'r16', '16' ],
+    '3 notes - C2': ['16' , '8'  , '16'        ],
+    '3 notes - D' : ['r16', '16' , '16' , '16' ],
     
-]
+    # 4 notes
+    '4 notes' : ['16' , '16', '16', '16'],
+}
 
 # Genere un temps
 def un_temps(nNoteMax=4, noirePointee=True, triolet=False, sextuplet=False):

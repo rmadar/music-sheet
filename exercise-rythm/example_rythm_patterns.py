@@ -1,19 +1,30 @@
+import sys
+sys.path.append("../src")
 import score_creator as sc
 
-# Generation de 100 mesure de note et rythme aleatoire.
-Nmeas  = 100
-piches = [sc.notes[i] for i in sc.rnd.randint(low=0, high=len(sc.notes)-5, size=100*4)]
-times  = [t for i in range(4*Nmeas) for t in sc.un_temps(2, False)] 
-notes  = " ".join(["{}{}".format(p, t) for p, t in zip(piches, times)])
+pattern = sc.rythm_pattern_16th
 
-# Creer une portee a partir de ces notes
-staff = sc.staff(notes)
+# Helper function
+def score(note_list, title=''):
+    '''
+    note_list: list of string, following the lilypond notation.
+    title    : title of the score
+    return a score object.
+    '''
+    notes = ' '.join(note_list)
+    staff = sc.staff(notes, clef='drum')
+    return sc.score([staff], title=title)
 
-# Mettre cette portee dans une partition
-score = sc.score([staff])
 
-# Creer le fichier final contenant cette partition
-sheet = sc.sheet(score)
+# Create a sheet that will contain all patterns
+sheet = sc.sheet(title='Rythmic Patterns From 16th Notes')
+for k, v in pattern.items():
+    n  = [*v, 'r4', *v, 'r4'] * 2
+    n += ['\\break']
+    n += [*v, *v, 'r4', 'r4']
+    n += [*v, *v, *v, 'r4' ]
+    sheet.add_score(score(n, title='Pattern with {}'.format(k)))
+
 
 # Save it
 sheet.save(midi=False)
