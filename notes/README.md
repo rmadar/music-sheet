@@ -20,4 +20,4 @@ How to count time sub-divisions for two most common schemes:
  + *contre-point*: playing a high melody with an increasing pitch, while playing a pitch-decreasing mellide for the bass
  + *cadence*: progression of (at least two) chords with a specific tension-resolution goal.
  + *harmonisation*: going from a scale to chords (*.i.e.* how to group notes together)
- + *degree*: 
+ + *degree*: position of a given note/chords in a scale; each degree has a specfic harmonic role (tension, resolution, ...)
