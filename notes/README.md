@@ -27,3 +27,4 @@ How to count time sub-divisions for two most common schemes:
  + *sub-tonic*: seventh degree (right before the tonic)
  + *sensible*: 1/2 ton below the tonic (can be the sub-tonic, or not depending on the interval between the 7th and 1st).
  + *cyle des quintes*: cadence going from 5th to 5th (assuming the precedent note is the tonic)
+ + *music tonal v.s. modal*: tonal-like music relies on the attraction from the tonic, while modal-like music doens't have attraction but rather several 'colors' given by the different modes of the same tonality.
