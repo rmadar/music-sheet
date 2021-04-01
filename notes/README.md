@@ -9,4 +9,6 @@ How to count time sub-divisions for two most common schemes:
 
 ## Music theory glossary
 
- + *appogiature*: play a little note right before the main note 
+ + *appogiature*: play a little note right before the main note
+ + *stacato*: play brief notes (noted with a dot below/above the note)
+ + *legato*
