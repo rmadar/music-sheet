@@ -2,12 +2,6 @@ import os
 import numpy as np
 from numpy import random as rnd
 
-############# TO DO ################
-# - add few user parameters: double croche fracion, silence fraction, etc ...
-# - remove unatural pattern coming from silence, such as "double-croche + soupire pointee",
-#   which would be a stacato noire.
-# ###################################
-
 class sheet:
 
     def __init__(self, score=''):
@@ -148,6 +142,10 @@ notes = [
 ]
 
 
+temps_pattern = [
+    
+]
+
 # Genere un temps
 def un_temps(nNoteMax=4, noirePointee=True, triolet=False, sextuplet=False):
     '''
@@ -162,8 +160,8 @@ def un_temps(nNoteMax=4, noirePointee=True, triolet=False, sextuplet=False):
       * liste de durees dont la somme fait 1. La taille de cette list
         depend de la segmentation du temps.
 
-    Arguements:
-    -----------
+    Arguments:
+    ----------
       * nNoteMax      [int]: nombre maximum de notes par temps 
       * noirePointee [bool]: inclure ou non des pattern avec 
                              noires pointees + double-croche.
