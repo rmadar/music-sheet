@@ -12,3 +12,4 @@ How to count time sub-divisions for two most common schemes:
  + *appogiature*: play a little note right before the main note
  + *staccato*: play brief notes (noted with a dot below/above the note)
  + *legato*: opposite from staccato, play sounds between each notes (noted with large horizontal brace)
+ + *anacrouse*: starting before the first bar, with an incomplete bar
