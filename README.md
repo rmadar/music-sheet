@@ -7,11 +7,11 @@ and export the corresponding audio file (mp3 format converted from MIDI using [t
 
 The first use case is to be able to generate random scores with a given level of difficulty for both note range and rythm pattern.
 An example can be found [here](exercise-reading/example_random_score.py), producing this score:
-![image](exercise-reading/example.jpg)
+![image](reading-bass/example.jpg)
 
 
 ## Rythm pattern
 
 The second use is to create simple and short phrases from basic pattern, based on 16th notes.
 
-![image](exercise-rythm/eg.png)
+![image](reading-rythm/eg.png)
