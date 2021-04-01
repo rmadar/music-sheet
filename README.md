@@ -9,6 +9,9 @@ The first use case is to be able to generate random scores with a given level of
 An example can be found [here](exercise-reading/example_random_score.py), producing this score:
 ![image](exercise-reading/example.jpg)
 
+
 ## Rythm pattern
 
 The second use is to create simple and short phrases from basic pattern, based on 16th notes.
+
+![image](exercise-rythm/eg.png)
