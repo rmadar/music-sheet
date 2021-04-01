@@ -7,9 +7,14 @@ How to count time sub-divisions for two most common schemes:
 + 16th notes: `| 1 i a et | 2 i a et | 3 i a et | 4 i a et |`
 
 
-## Music theory glossary
+## Music writing theory
 
  + *appogiature*: play a little note right before the main note
  + *staccato*: play brief notes (noted with a dot below/above the note)
  + *legato*: opposite from staccato, play sounds between each notes (noted with large horizontal brace)
  + *anacrouse*: starting before the first bar, with an incomplete bar
+
+
+## Harmony/composition theory
+
+ + *contre-point*: playing a high melody with an increasing pitch, while playing a pitch-decreasing mellide for the bass
