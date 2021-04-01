@@ -41,8 +41,11 @@ pattern = {
 
 
 # Starting point to perform combinations
-readable_pattern = [
-
+ps = [
+    
+    # no notes
+    ['r4'],
+    
     # 1 note
     ['4'               ],
     ['8'  , 'r8'       ],
@@ -92,7 +95,7 @@ for k, v in pattern.items():
     sheet.add_score(score(n, title='Pattern with {}'.format(k)))
 
 # Save it
-sheet.save(midi=False)
+sheet.save(fname='patterns.pdf', midi=False)
 
 
 #  -----------------
@@ -100,12 +103,12 @@ sheet.save(midi=False)
 #  -----------------
 
 # Get a random list of N pair of random patterns
-N, iMin, iMax = 20, 0, len(readable_pattern)
+N, iMin, iMax = 20, 0, len(ps)
 indices = np.random.randint(low=iMin, high=iMax, size=(20, 2))
 notes = []
 for index in indices:
     i1, i2 = index[0], index[1]
-    w1, w2 = readable_pattern[i1], readable_pattern[i2] 
+    w1, w2 = ps[i1], ps[i2] 
     n  = [*w1, *w2, 'r2'] * 2
     n += ['\\break']
     n += [*w1, *w2, *w1, *w2] * 2
@@ -114,8 +117,86 @@ for index in indices:
 # Create the sheet
 sheet = sc.sheet(title='Two-words Phrases From 16th-note Patterns')
 for i, n in enumerate(notes):
-    sheet.add_score(score(n, title='Phrase {}'.format(i)))
+    sheet.add_score(score(n, title='Phrase {}'.format(i+1)))
 
 # Save it
-sheet.save(midi=False)
+sheet.save(fname='two-words.pdf', midi=False)
+
+
+
+
+#  ------------------
+#  THREE-WORD PHRASES
+#  ------------------
+
+# Get a random list of N triplet of random patterns
+N, iMin, iMax = 20, 0, len(ps)
+indices = np.random.randint(low=iMin, high=iMax, size=(20, 3))
+notes = []
+for index in indices:
+    i1, i2, i3 = index[0], index[1], index[2]
+    w1, w2, w3 = ps[i1], ps[i2], ps[i3] 
+    n  = [*w1, *w2, *w3, 'r4'] * 2
+    n += ['\\break']
+    n += [*w1, *w2, *w3, *w1, *w2, *w3, 'r4']
+    notes.append(n)
+
+# Create the sheet
+sheet = sc.sheet(title='Three-words Phrases From 16th-note Patterns')
+for i, n in enumerate(notes):
+    sheet.add_score(score(n, title='Phrase {}'.format(i+1)))
+
+# Save it
+sheet.save(fname='three-words.pdf', midi=False)
+
+
+#  -----------------
+#  FOUR-WORD PHRASES
+#  -----------------
+
+# Get a random list of N 4-random patterns
+N, iMin, iMax = 20, 0, len(ps)
+indices = np.random.randint(low=iMin, high=iMax, size=(20, 4))
+notes = []
+for index in indices:
+    i1, i2, i3, i4 = index[0], index[1], index[2], index[3]
+    w1, w2, w3, w4 = ps[i1], ps[i2], ps[i3], ps[i4] 
+    n  = [*w1, *w2, *w3, *w4, 'r1']
+    n += ['\\break']
+    n += [*w1, *w2, *w3, *w4] * 2
+    notes.append(n)
+
+# Create the sheet
+sheet = sc.sheet(title='Four-words Phrases From 16th-note Patterns')
+for i, n in enumerate(notes):
+    sheet.add_score(score(n, title='Phrase {}'.format(i+1)))
+
+# Save it
+sheet.save(fname='four-words.pdf', midi=False)
+
+
+
+
+#  -----------------
+#  FOUR-WORD PHRASES
+#  -----------------
+
+# Get a random list of N 4-random patterns
+N, iMin, iMax = 20, 0, len(ps)
+indices = np.random.randint(low=iMin, high=iMax, size=(20, 5))
+notes = []
+for index in indices:
+    i1, i2, i3, i4, i5 = index[0], index[1], index[2], index[3], index[4]
+    w1, w2, w3, w4, w5 = ps[i1], ps[i2], ps[i3], ps[i4], ps[i5] 
+    n  = [*w1, *w2, *w3, *w4, *w5, 'r2.']*2
+    notes.append(n)
+
+# Create the sheet
+sheet = sc.sheet(title='Five-words Phrases From 16th-note Patterns')
+for i, n in enumerate(notes):
+    sheet.add_score(score(n, title='Phrase {}'.format(i+1)))
+
+# Save it
+sheet.save(fname='five-words.pdf', midi=False)
+
 
