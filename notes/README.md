@@ -9,6 +9,7 @@ How to count time sub-divisions for two most common schemes:
 
 ## Music writing theory
 
+ + *alteration*: increasing/decreasing a given note by 1/2 ton (can naturally appear in a given tonality, we then talk about "dieses a la cle")
  + *appogiature*: play a little note right before the main note
  + *staccato*: play brief notes (noted with a dot below/above the note)
  + *legato*: opposite from staccato, play sounds between each notes (noted with large horizontal brace)
@@ -21,3 +22,5 @@ How to count time sub-divisions for two most common schemes:
  + *cadence*: progression of (at least two) chords with a specific tension-resolution goal.
  + *harmonisation*: going from a scale to chords (*.i.e.* how to group notes together)
  + *degree*: position of a given note/chords in a scale; each degree has a specfic harmonic role (tension, resolution, ...)
+ + *tonic* (or *fondamental*): first degree of the scale
+ + *dominant*: fifth degree of the scale
