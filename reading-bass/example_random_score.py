@@ -120,7 +120,8 @@ staff = sc.staff(notes)
 score = sc.score([staff])
 
 # Creer le fichier final contenant cette partition
-sheet = sc.sheet(score)
+sheet = sc.sheet(score, "Exercice de lecture")
 
 # Save it
 sheet.save(midi=False)
+
