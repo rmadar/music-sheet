@@ -5,13 +5,13 @@ DO  = ha.note('c')
 MId = ha.note('e', '#')
 
 # Basic checks
-#print( LA, MId )
-#print( LA.absolute_tons() )
-#print( LA.diff(DO) )
-#print( DO.diff(LA) )
-print( f'\nPerfect 5th of LA {LA.note_of("5J", ascending=False)}' )
-print( f'Perfect descendant 5th of DO {DO.note_of("5J", ascending=False)}' )
-
+print( LA, MId )
+print( LA.lilypond_str(), MId.lilypond_str() )
+print( LA.absolute_tons() )
+print( LA.diff(DO) )
+print( DO.diff(LA) )
+print( f'\nPerfect 5th of LA {LA.note_of("5J")}' )
+print( f'Perfect descendant 5th of DO {DO.note_of("5J", descending=False)}' )
 
 
 # Testing intervals findings - C major key
@@ -21,7 +21,8 @@ txt = ''
 for interval in ['un', '2M', '3M', '4J', '5J', '6M', '7M', '8J']:
      txt += f' {DO.note_of(interval)}'
 print(txt)
-    
+
+     
 # C minor natural key
 print('')
 print('C minor natural')

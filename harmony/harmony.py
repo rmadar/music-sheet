@@ -1,10 +1,17 @@
 # Accepted pitch
 possible_pitch = ['c', 'd', 'e', 'f', 'g', 'a', 'b']
 tons_steps = [1, 1, 0.5, 1, 1, 1, 0.5]
-N_pitch = 6
+N_pitch = len(possible_pitch)
 
 # Accepted alterations
 possible_alterations = ['b', '#', 'bb', '##', 'natural']
+alteration_values = {
+    'b' : -0.5,
+    '#' : +0.5,
+    'bb': -1.0,
+    '##': +1.0,
+    'natural': 0,
+}
 
 # Intervals names
 possible_intervals  = ['un']
@@ -44,21 +51,20 @@ interval_values = {
 
 class note:
 
-
     # Constructor of the note
-    def __init__(self, pitch, alteration='natural', octave=4):
+    def __init__(self, pitch, alteration='natural', octave=5):
 
         '''
         pitch      [string]: do re mi fa sol la si (international notation)
         alteration [string]: natural, b, #, bb, ## (default = 'natural')
-        octave     [int]   : octave of the pitch (default 4: middle octave on piano)
+        octave     [int]   : octave of the pitch (default 5: middle octave on piano)
         '''
         
         if pitch not in possible_pitch:
-            return NameError(f'{pitch} is not supported, only {possible_pitch} are.')
+            raise NameError(f'{pitch} is not supported, only {possible_pitch} are.')
 
         if alteration not in possible_alterations:
-            return NameError(f'{alteration} is not supported, only {possible_alterations} are.')
+            raise NameError(f'{alteration} is not supported, only {possible_alterations} are.')
 
         self.pitch = pitch
         self.alteration = alteration
@@ -77,7 +83,28 @@ class note:
         else:
             return f'{self.pitch}{octave_str}{self.alteration}'
 
+    # Get a string usable for lilypond    
+    def lilypond_str(self):
+        '''
+        String suited for lilypond
+        '''
 
+        # Alteration
+        alt = ''
+        if self.alteration == '#' : alt = 'is'
+        if self.alteration == 'b' : alt = 'es'
+        if self.alteration == '##': alt = 'isis'
+        if self.alteration == 'bb': alt = 'eses'
+
+        # Octave
+        octave = ''
+        if self.octave>4: octave = '\'' * (self.octave - 4)
+        if self.octave<4: octave = ','  * (4 - self.octave)
+
+        # Return the result
+        return f'{self.pitch}{alt}{octave}'
+
+    
     # Compute the absolute distance (in tone) wrt the first C on a piano
     def absolute_tons(self):
         '''
@@ -85,7 +112,7 @@ class note:
         to the first C of a piano
         '''
         i = possible_pitch.index(self.pitch)
-        rel_ton = sum(tons_steps[:i])
+        rel_ton = sum(tons_steps[:i])  + alteration_values[self.alteration]
         return self.octave * 6 + rel_ton
 
 
@@ -104,7 +131,7 @@ class note:
         
         
     # Get the pitch corresponding to an interval
-    def note_of(self, interval, ascending=True):
+    def note_of(self, interval, descending=False):
 
         '''
         Return the note correponding to a given interval of
@@ -136,12 +163,12 @@ class note:
         new_pitch, new_octave  = '', self.octave
 
         # In case of ascending interval
-        if ascending:
+        if not descending:
             new_index = index + index_to_add
             if new_index < N_pitch:
                 new_pitch = possible_pitch[new_index]
             else:
-                new_pitch = possible_pitch[new_index-N_pitch-1]
+                new_pitch = possible_pitch[new_index-N_pitch]
                 new_octave = self.octave + 1
                 
         # In case of descending interval
@@ -150,14 +177,14 @@ class note:
             if new_index > 0:
                 new_pitch = possible_pitch[new_index]
             else:
-                new_pitch = possible_pitch[N_pitch+new_index+1]
+                new_pitch = possible_pitch[N_pitch+new_index]
                 new_octave = self.octave - 1
 
         # Determining the alteration
         x = note(new_pitch, 'natural', new_octave)
         res = x
         nt_target = interval_values[interval]
-        if ascending:
+        if not descending:
             ntons = x.diff(self)
             if ntons == nt_target:
                 res = x
@@ -176,3 +203,177 @@ class note:
             
         # Return the result
         return res
+
+
+class triad:
+
+    # Constructor from 3 notes
+    def __init__(self, n1, n2, n3):
+
+        # Filling the 3 notes
+        self.n1 = n1
+        self.n2 = n2
+        self.n3 = n3
+
+        # Chord nature all initialized at False
+        self.minor = False
+        self.major = False
+        self.aug   = False
+        self.dim   = False
+        self.sus2  = False
+        self.sus4  = False
+
+        # Which renversement ?
+        # To be implemented
+        
+        # Getting the two intervales values
+        a = n2.diff(n1)
+        b = n3.diff(n2)
+
+        # What is the nature of the chord ?
+        # Major
+        if (a==2 and b==1.5):
+            self.major = True
+        # Augmented
+        elif (a==2 and b==2):
+            self.aug  = True
+        # Minor
+        elif (a==1.5 and b==2):
+            self.minor = True
+        # Dimished
+        elif (a==1.5 and b==1.5):
+            self.dim  = True
+        # Suspended by the 2nd
+        elif (a==1 and b==2.5):
+            self.sus2  = True
+        # Suspended by the 4th
+        elif (a==2.5 and b==1.0):
+            self.sus4  = True
+        else:
+            txt = f'These 2 intervals {a} and {b} is not major/minor/augemented/dimished/sus2/sus4'
+            print(txt)
+
+    def __str__(self):
+        return self.name()
+        
+    # Get characteristics of the 3-sounds chord    
+    def is_minor(self):
+        return self.minor
+
+    def is_major(self):
+        return self.major
+
+    def is_aug(self):
+        return self.aug
+
+    def is_dim(self):
+        return self.dim
+
+    def name(self):
+        # Fondamental note
+        txt = self.n1.pitch.upper()
+        if self.n1.alteration != 'natural':
+            txt += self.n1.alteraction
+
+        if self.minor:
+            txt += 'min'
+
+        if self.aug:
+            txt += 'aug'
+
+        if self.dim:
+            txt += 'dim'
+
+        if self.sus2:
+            txt += 'sus2'
+
+        if self.sus4:
+            txt += 'sus4'
+            
+        return txt 
+
+    def lilypond_str(self):        
+        return f'< {self.n1.lilypond_str()} {self.n2.lilypond_str()} {self.n3.lilypond_str()} >'
+
+    
+    @classmethod
+    def build(self, I, nature, position='fond'):
+        '''
+        I        = fondamental of the chords
+        nature   = major, minor, augmented, diminished
+        position = choice of the lower note (bass = I, III or V) 
+        '''
+        n1 = I
+        nature = nature.lower()
+        if nature == 'maj' or nature == 'major':
+            n2 = n1.note_of('3M')
+            n3 = n1.note_of('5J')
+        elif nature == 'min' or nature == 'minor':
+            n2 = n1.note_of('3m')
+            n3 = n1.note_of('5J')
+        elif nature == 'dim' or nature == 'diminished':
+            n2 = n1.note_of('3m')
+            n3 = n1.note_of('5-')
+        elif nature == 'aug' or nature == 'augmented':
+            n2 = n1.note_of('3M')
+            n3 = n1.note_of('5+')
+        elif nature == 'sus2' or nature == 'suspended2':
+            n2 = n1.note_of('2M')
+            n3 = n1.note_of('5J')
+        elif nature == 'sus4' or nature == 'suspended4':
+            n2 = n1.note_of('4J')
+            n3 = n1.note_of('5J')
+        else:
+            raise NameError(f'nature of triad cannot be {nature}')
+            return triad(n1, n2, n3)
+
+        return triad(n1, n2, n3)
+    
+
+class tetrad:
+
+    # Constructor from the 4 notes
+    def __init_(self, I, III, V, VII):
+        self.I   = I
+        self.III = III
+        self.V   = V
+        self.VII = VII
+        
+    # Get characteristics of the 4-sounds chord    
+    def is_minor(self):
+        return
+
+    def is_major(self):
+        return
+    
+    def is_vII_major(self):
+        return
+    
+    def is_vII_minor(self):
+        return 
+    
+    def is_demidim(self):
+        return
+
+    def is_dim(self):
+        return
+
+    def is_aug(self):
+        return
+    
+    def name(self):
+        '''
+        '''
+        return 
+    
+    @classmethod
+    def build(I, nature, position):
+        '''
+        I        = fondamental of the chords
+        nature   = major, minor, augmented, diminished
+        position = choice of the lower note (bass = I, III or V) 
+        '''
+        
+        return 
+
+    
