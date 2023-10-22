@@ -72,7 +72,7 @@ class sheet:
         f.write(self.body)
         f.close()
         
-    def save(self, fname='sheet.ly', midi=True):
+    def save(self, fname='sheet.ly', midi=False):
         self.lylipond_file(fname)
         os.system("lilypond {}".format(fname))
         if midi:
@@ -83,7 +83,7 @@ class sheet:
 
 
 class score:
-    def __init__(self, staffs, title=''):
+    def __init__(self, staffs, title='', midi=False):
         self.body = '\\score {\n'
         self.body += '<<\n'
         for s in staffs:
@@ -97,8 +97,13 @@ class score:
 
         self.body += '''
         \layout { }
-        \midi {
-        }
+        '''
+        if midi:
+            self.body += '''
+            \midi {
+            }
+            '''
+        self.body += '''
         }
         '''
         
