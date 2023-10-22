@@ -4,7 +4,9 @@ from numpy import random as rnd
 
 class sheet:
 
-    def __init__(self, score='', title=''):
+    def __init__(self, score='', title='', composer='R. Madar',
+                 hide_BarNumber=False,
+                 hide_TimeSignature=False):
 
         self.body = ''
         self.preamble = r'''
@@ -20,7 +22,10 @@ class sheet:
 
         self.preamble += '''
           subtitle = " "
-          composer = "Romain Madar"
+        '''
+        if composer:
+            self.preamble += f'composer = "{composer}"'
+        self.preamble += '''
           arranger = " "
           tagline  = "Generated with https://github.com/rmadar/music-sheet"
         }
@@ -30,6 +35,15 @@ class sheet:
           \context {
            \Score
            \override SpacingSpanner.base-shortest-duration = #(ly:make-moment 1/16)
+        '''
+
+        if hide_BarNumber:
+            self.preamble += '     \omit BarNumber'
+
+        if hide_TimeSignature:
+            self.preamble += '     \override TimeSignature.stencil = ##f'
+            
+        self.preamble += '''
           }
         }
         
@@ -71,9 +85,11 @@ class sheet:
 class score:
     def __init__(self, staffs, title=''):
         self.body = '\\score {\n'
+        self.body += '<<\n'
         for s in staffs:
             self.body += s.body
-
+        self.body += '>>\n'
+        
         if title:
             self.body += '\\header {'
             self.body += 'piece = "{}"'.format(title)
@@ -95,7 +111,10 @@ class staff:
         Arguments:
         ----------
           - 'notes' [string]: music following lylipond notation.
-          - 'clef'  [string]: clef for this staff (drum will create a 'DrumStaff')
+          - 'clef'  [string]: clef for this staff (treble/bass/drum/rythmic) 
+                               - 'drum' will create a 'DrumStaff'
+                               - 'rythmic' will create a 'RhythmicStaff'
+                               - 'chords'
           - 'time'  [string]: time signature of the staff (e.g. 4/4)
           - 'tempo' [string]: tempo for the staff (e.g. 4=90)
           - 'midi'  [string]: midi instrument 
@@ -109,15 +128,24 @@ class staff:
         txt = '\t\\new Staff'
         if clef.lower() == 'drum':
             txt = '\t\\new DrumStaff'
+        if clef.lower() == 'rythmic':
+            txt = '\t\\new RhythmicStaff'
+        if clef.lower() == 'chords':
+            txt = '\t\\new ChordNames'
         txt += ''' 
         \t{
         \t\t
-        \\numericTimeSignature
         '''
-        if clef.lower() != 'drum':
+        if clef.lower() != 'drum' and clef.lower() != 'rythmic' and clef.lower() != 'chords':
             txt += '\t\t \\clef {}\n'.format(self.clef)
-        txt += '\t\t \\time {}\n'.format(self.time)
-        txt += '\t\t \\tempo {}\n'.format(self.tempo)
+
+        if self.time:
+            txt += '\t\t\\numericTimeSignature'
+            txt += '\t\t \\time {}\n'.format(self.time)
+
+        if self.tempo:
+            txt += '\t\t \\tempo {}\n'.format(self.tempo)
+            
         if midi:
             txt += '\t\t \\set Staff.midiInstrument = #"{}"\n'.format(self.midi)
         txt += '''
