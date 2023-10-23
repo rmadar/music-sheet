@@ -7,12 +7,15 @@ import harmony as ha
 
 # Get N random triads (fondamental = pitch + alteration, nature)
 N = 100
-fonds = np.random.choice(ha.possible_pitch, N)
-alters = np.random.choice(['natural', '#', 'b'], N, p=[0.5, 0.25, 0.25])
-naturs = np.random.choice(['maj', 'min', 'dim', 'aug', 'sus2', 'sus4'], N, p=[0.3, 0.3, 0.1, 0.1, 0.1, 0.1])
+fonds = np.random.choice(ha.possible_pitchs, N)
+alters = np.random.choice(['natural', '#', 'b'], N,
+                          p=[0.5, 0.25, 0.25])
+naturs = np.random.choice(['maj', 'min', 'dim', 'aug', 'sus2', 'sus4'], N,
+                          p=[0.3, 0.3, 0.1, 0.1, 0.1, 0.1]
+                          )
 
 # Generate the chords
-chords = [ha.triad.build(ha.note(fond, alter), nature) for fond, alter, nature in zip(fonds, alters, naturs)]
+chords = [ha.triad.build(ha.note(f, a), n) for f, a, n in zip(fonds, alters, naturs)]
 
 # Create the lilypond string to be feed into a score
 chords_str = [chord.lilypond_str() for chord in chords]

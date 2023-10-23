@@ -1,7 +1,7 @@
 # Accepted pitch
-possible_pitch = ['c', 'd', 'e', 'f', 'g', 'a', 'b']
+possible_pitchs = ['c', 'd', 'e', 'f', 'g', 'a', 'b']
 tons_steps = [1, 1, 0.5, 1, 1, 1, 0.5]
-N_pitch = len(possible_pitch)
+N_pitch = len(possible_pitchs)
 
 # Accepted alterations
 possible_alterations = ['b', '#', 'bb', '##', 'natural']
@@ -25,7 +25,6 @@ possible_intervals += ['8J']
 
 # Interval values (ton)
 # TO-DO :
-#   * check the interval values
 #   * add 9th, 11th and 13th
 interval_values = {
     'un':   0,
@@ -42,7 +41,7 @@ interval_values = {
     '6m':   4,
     '6M': 4.5,
     '6+':   5,
-    '7-':   5,
+    '7-': 4.5,
     '7m':   5,
     '7M': 5.5,
     '8J':   6,
@@ -60,8 +59,8 @@ class note:
         octave     [int]   : octave of the pitch (default 5: middle octave on piano)
         '''
         
-        if pitch not in possible_pitch:
-            raise NameError(f'{pitch} is not supported, only {possible_pitch} are.')
+        if pitch not in possible_pitchs:
+            raise NameError(f'{pitch} is not supported, only {possible_pitchs} are.')
 
         if alteration not in possible_alterations:
             raise NameError(f'{alteration} is not supported, only {possible_alterations} are.')
@@ -111,7 +110,7 @@ class note:
         Return the absolute number of tons with respect
         to the first C of a piano
         '''
-        i = possible_pitch.index(self.pitch)
+        i = possible_pitchs.index(self.pitch)
         rel_ton = sum(tons_steps[:i])  + alteration_values[self.alteration]
         return self.octave * 6 + rel_ton
 
@@ -157,7 +156,7 @@ class note:
         quality = interval[1]
 
         # get the index of the current note
-        index = possible_pitch.index(self.pitch)
+        index = possible_pitchs.index(self.pitch)
 
         # Getting the new pitch name
         new_pitch, new_octave  = '', self.octave
@@ -166,18 +165,18 @@ class note:
         if not descending:
             new_index = index + index_to_add
             if new_index < N_pitch:
-                new_pitch = possible_pitch[new_index]
+                new_pitch = possible_pitchs[new_index]
             else:
-                new_pitch = possible_pitch[new_index-N_pitch]
+                new_pitch = possible_pitchs[new_index-N_pitch]
                 new_octave = self.octave + 1
                 
         # In case of descending interval
         else:
             new_index = index - index_to_add
             if new_index > 0:
-                new_pitch = possible_pitch[new_index]
+                new_pitch = possible_pitchs[new_index]
             else:
-                new_pitch = possible_pitch[N_pitch+new_index]
+                new_pitch = possible_pitchs[N_pitch+new_index]
                 new_octave = self.octave - 1
 
         # Determining the alteration
@@ -198,7 +197,7 @@ class note:
                 res = note(new_pitch, '##', new_octave)
             else:
                 txt = 'The ton difference is not correct, please investigage'
-                NameError(txt)
+                raise NameError(txt)
             
             
         # Return the result
@@ -214,7 +213,8 @@ class triad:
         self.n1 = n1
         self.n2 = n2
         self.n3 = n3
-
+        self.notes_list = [n1, n2, n3]
+        
         # Chord nature all initialized at False
         self.minor = False
         self.major = False
@@ -263,6 +263,12 @@ class triad:
     def is_major(self):
         return self.major
 
+    def is_sus2(self):
+        return self.sus2
+    
+    def is_sus4(self):
+        return self.sus4
+
     def is_aug(self):
         return self.aug
 
@@ -292,9 +298,8 @@ class triad:
             
         return txt 
 
-    def lilypond_str(self):        
-        return f'< {self.n1.lilypond_str()} {self.n2.lilypond_str()} {self.n3.lilypond_str()} >'
-
+    def lilypond_str(self):
+        return  '<' + ' '.join([n.lilypond_str() for n in self.notes_list]) + '>'
     
     @classmethod
     def build(self, I, nature, position='fond'):
@@ -325,7 +330,6 @@ class triad:
             n3 = n1.note_of('5J')
         else:
             raise NameError(f'nature of triad cannot be {nature}')
-            return triad(n1, n2, n3)
 
         return triad(n1, n2, n3)
     
@@ -333,47 +337,254 @@ class triad:
 class tetrad:
 
     # Constructor from the 4 notes
-    def __init_(self, I, III, V, VII):
-        self.I   = I
-        self.III = III
-        self.V   = V
-        self.VII = VII
+    def __init__(self, n1, n2, n3, n4):
+        self.n1 = n1
+        self.n2 = n2
+        self.n3 = n3
+        self.n4 = n4
+        self.triad = triad(n1, n2, n3)
+        self.notes_list = [n1, n2, n3, n4]
+        
+        # Chord nature related to the 3rd
+        self.min3 = False
+        self.maj3 = False
+        self.sus2 = False
+        self.sus4 = False
+
+        # Chord nature related to the fifth
+        self.per5 = False
+        self.aug5 = False
+        self.dim5 = False
+
+        # Chord nature related to the seventh
+        self.maj7 = False
+        self.min7 = False
+        self.dim7 = False
+
+        # Global nature
+        self.dim  = False
+        self.aug  = False
+        self.ddim = False
+        
+        # Getting the 3 intervals
+        a = n2.diff(n1)
+        b = n3.diff(n1)
+        c = n4.diff(n1)
+        
+        # Nature related to the 3rd for perfect fifth
+        if a==1:
+            self.sus2 = True
+        if a==1.5:
+            self.min3 = True
+        if a==2:
+            self.maj3 = True
+        if a==2.5:
+            self.sus4 = True
+
+        # Nature related to the fifth
+        if b==3:
+            self.dim5 = True
+        if b==3.5:
+            self.per5 = True
+        if b==4:
+            self.aug5 = True
+        
+        # Nature related to the seventh
+        if c==5.5:
+            self.maj7 = True
+        if c==5.0:
+            self.min7 = True
+        if c==4.5:
+            self.dim7 = True
+        
+        # Global nature (dim v.s. demi-dim)
+        if self.min3 and self.dim5 and self.min7:
+            self.ddim = True
+
+        if self.min3 and self.dim5 and self.dim7:
+            self.dim = True
+
+    # Defining the string operator
+    def __str__(self):
+        return self.name()
         
     # Get characteristics of the 4-sounds chord    
     def is_minor(self):
-        return
+        return self.triad.is_minor()
 
     def is_major(self):
-        return
+        return self.triad.is_major()
     
-    def is_vII_major(self):
-        return
-    
-    def is_vII_minor(self):
-        return 
-    
-    def is_demidim(self):
-        return
+    def is_sus2(self):
+        return self.triad.is_sus2()
 
-    def is_dim(self):
-        return
+    def is_sus4(self):
+        return self.triad.is_sus4()
 
     def is_aug(self):
-        return
+        return self.triad.is_aug()
+    
+    def is_maj7(self):
+        return self.maj7
+    
+    def is_ddim(self):
+        return self.triad.is_dim() and self.min7
+    
+    def is_dim(self):
+        return self.triad.is_dim() and self.dim7
     
     def name(self):
-        '''
-        '''
-        return 
+        # Fondamental note
+        txt = self.n1.pitch.upper()
+        if self.n1.alteration != 'natural':
+            txt += self.n1.alteraction
+
+        # Minor
+        if self.is_minor():
+            txt += 'min'
+            if self.min7:
+                txt += '7'
+            if self.maj7:
+                txt += 'Maj7'
+            if self.dim7:
+                txt += '[dim7]'
+            return txt
+
+        # Major
+        if self.is_major():
+            if self.min7:
+                txt += '7'
+            if self.maj7:
+                txt += 'Maj7'
+            if self.dim7:
+                txt += '[dim7]'
+            return txt
+                
+        # Suspended2
+        if self.is_sus2():
+            txt += 'sus2'
+            if self.min7:
+                txt += '7'
+            if self.maj7:
+                txt += 'Maj7'
+            return txt
+
+        # Suspended4
+        if self.is_sus4():
+            txt += 'sus4'
+            if self.min7:
+                txt += '7'
+            if self.maj7:
+                txt += 'Maj7'
+            return txt
+        
+        # Augmented
+        if self.is_aug():
+            txt += 'aug'
+            if self.min7:
+                txt += '7'
+            if self.maj7:
+                txt += 'Maj7'
+            return txt
+        
+        # Demi-diminished
+        if self.is_ddim():
+            txt += 'min7b5'
+            return txt
+
+        # Diminished
+        if self.is_dim():
+            txt += 'dim7'
+            return txt
+
+        return 'ton accord est foireux mon pote'
+    
+    
+    def lilypond_str(self):
+        return  '<' + ' '.join([n.lilypond_str() for n in self.notes_list]) + '>'
     
     @classmethod
-    def build(I, nature, position):
+    def build_from_triad(self, triad, n4):
         '''
-        I        = fondamental of the chords
-        nature   = major, minor, augmented, diminished
-        position = choice of the lower note (bass = I, III or V) 
+        Build a tetrad from a triad and 4th note
         '''
+        return tetrad(triad.n1, triad.n2, triad.n3, n4) 
+    
+    @classmethod
+    def build(self, n1, nature, position='fondamental'):
+        '''
+        n1       = fondamental of the chords
+        nature   = maj_7 , maj_maj7 , min_7 , min_maj7 , 
+                   sus2_7, sus2_maj7, sus4_7, sus4_maj7,
+                   aug_7 , aug_maj7 , ddim_7  , dim_7,
+        position = choice of the lower note (bass = I, III, V or VII) 
+        '''
+
+        # Check the nature of the tetrad is one of the possibility
+        nature = nature.lower()
+        nature_options  = ['maj_7' , 'maj_maj7' , 'min_7' , 'min_maj7' ]
+        nature_options += ['sus2_7', 'sus2_maj7', 'sus4_7', 'sus4_maj7']
+        nature_options += ['aug_7' , 'aug_maj7' , 'ddmi_7', 'dim_7'    ]
+        if nature not in nature_options:
+            raise NameError(f'ERROR: the tetrad nature {nature} is not supported, only {nature_options} are.')
         
-        return 
+        # Initialize notes values
+        n2, n3, n4 = n1, n1, n1
+
+        # Majors/minors
+        if nature=='maj_7':
+            n2 = n1.note_of('3M')
+            n3 = n1.note_of('5J')
+            n4 = n1.note_of('7m')
+        elif nature=='maj_maj7':
+            n2 = n1.note_of('3M')
+            n3 = n1.note_of('5J')
+            n4 = n1.note_of('7M')
+        elif nature=='min_7':
+            n2 = n1.note_of('3m')
+            n3 = n1.note_of('5J')
+            n4 = n1.note_of('7m')
+        elif nature=='min_maj7':
+            n2 = n1.note_of('3m')
+            n3 = n1.note_of('5J')
+            n4 = n1.note_of('7M')
+
+        # Suspended chords
+        elif nature=='sus2_7':
+            n2 = n1.note_of('2M')
+            n3 = n1.note_of('5J')
+            n4 = n1.note_of('7m')
+        elif nature=='sus2_maj7':
+            n2 = n1.note_of('2M')
+            n3 = n1.note_of('5J')
+            n4 = n1.note_of('7M')
+        elif nature=='sus4_7':
+            n2 = n1.note_of('4M')
+            n3 = n1.note_of('5J')
+            n4 = n1.note_of('7m')
+        elif nature=='sus4_maj7':
+            n2 = n1.note_of('4M')
+            n3 = n1.note_of('5J')
+            n4 = n1.note_of('7M')
+
+        # Augmented / (demi)-diminished chords
+        elif nature=='aug_7':
+            n2 = n1.note_of('3M')
+            n3 = n1.note_of('5+')
+            n4 = n1.note_of('7m')
+        elif nature=='aug_maj7':
+            n2 = n1.note_of('3M')
+            n3 = n1.note_of('5+')
+            n4 = n1.note_of('7M')
+        elif nature=='ddim_7':
+            n2 = n1.note_of('3m')
+            n3 = n1.note_of('5-')
+            n4 = n1.note_of('7m')
+        elif nature=='dim_7':
+            n2 = n1.note_of('3m')
+            n3 = n1.note_of('5-')
+            n4 = n1.note_of('7-')    
+        
+        return tetrad(n1, n2, n3, n4)
 
     
