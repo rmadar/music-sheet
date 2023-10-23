@@ -27,6 +27,7 @@ Another use is to create simple and short phrases from basic pattern, based on 1
 
 ## TO-DO List
 
+ - [ ] Re-think the rythm pattern including with distinction of different durations
  - [ ] Add tetrads
  - [ ] Add scales
 
