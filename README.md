@@ -13,7 +13,7 @@ An example can be found [here](exercise-reading/example_random_score.py), produc
 
 The tool offer the possibility to write exercises sheet to find triads names from the 3 notes, or find the 3 notes from the name. The correction can also be generated.
 
-![image](harmony/chords_example.png)
+![image](harmony/chords_examples.png)
 ![image](harmony/chords_correction_example.png)
 
 ## Practingin rythm pattern
