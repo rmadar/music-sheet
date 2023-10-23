@@ -25,6 +25,12 @@ possible_intervals += ['8J']
 
 # Scale names - later add other modes
 possible_scales = ['major', 'minor_natural', 'minor_harmonic', 'minor_melodic']
+nice_scales_names = {
+    'major'         : 'Major',
+    'minor_natural' : 'Natural Minor' ,
+    'minor_harmonic': 'Harmonic Minor',
+    'minor_melodic' : 'Melodic Minor' ,
+}
 
 # Scales composition
 scales_intervals = {
@@ -609,6 +615,9 @@ class scale:
         if name not in possible_scales:
             raise NameError(f'{name} is not supported, only {possible_scales} are.')
         
+        # Store the nature
+        self.nature = name
+
         # Get all the intervals
         self.intervals = scales_intervals[name]
 
@@ -623,7 +632,28 @@ class scale:
         self.n5 = tonic.note_of(self.intervals[4])
         self.n6 = tonic.note_of(self.intervals[5])
         self.n7 = tonic.note_of(self.intervals[6])
-
         
     def __str__(self):
         return  ' '.join([str(n) for n in self.notes_list])
+
+    def name(self):
+        # Fondamental note
+        txt = self.n1.pitch.upper()
+        if self.n1.alteration != 'natural':
+            txt += self.n1.alteration
+        txt += ' ' + nice_scales_names[self.nature]
+        return txt
+
+    def lilypond_str(self, with_name=False, name_color='black'):
+        '''
+        When with_name is True, it adds the name of the scale
+        on top of the first note. 'name_color' allows to change
+        the color of the text.
+        '''
+        if with_name:
+            name = self.name().replace('b', '"\\flat"').replace('#', '"\\sharp"')
+            txt  = f'{self.n1.lilypond_str()}1^\\markup{{ \\with-color "{name_color}" \\concat{{"{name}"}} }} \\bar "" '
+            txt += '1 \\bar "" '.join([n.lilypond_str() for n in self.notes_list[1:]])
+            return txt
+        else :
+            return  '1 \\bar "" '.join([n.lilypond_str() for n in self.notes_list])

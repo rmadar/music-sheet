@@ -6,11 +6,11 @@ import harmony as ha
 
 
 # Get N random triads (fondamental = pitch + alteration, nature)
-N = 1000
+N = 200
 fonds = np.random.choice(ha.possible_pitchs, N*10)
-alters = np.random.choice(a=['natural', '#' , 'b' ], N*10,
+alters = np.random.choice(a=['natural', '#' , 'b' ], size=N*10,
                           p=[0.5      , 0.25, 0.25])
-naturs = np.random.choice(a=['maj', 'min', 'dim', 'aug', 'sus2', 'sus4'], N*10,
+naturs = np.random.choice(a=['maj', 'min', 'dim', 'aug', 'sus2', 'sus4'], size=N*10,
                           p=[0.3  , 0.3  , 0.1  , 0.1  , 0.1   , 0.1   ])
 
 # Generate the chords

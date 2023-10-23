@@ -16,7 +16,7 @@ nature_weight = np.array(nature_weight)
 nature_weight = nature_weight / nature_weight.sum()
 # Get N random triads (fondamental = pitch + alteration, nature)
 
-N = 1000
+N = 200
 fonds  = np.random.choice(ha.possible_pitchs, 10*N)
 alters = np.random.choice(['natural', '#', 'b'], size=10*N,
                           p=[0.5, 0.25, 0.25])
