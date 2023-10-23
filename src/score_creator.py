@@ -111,7 +111,7 @@ class score:
 class staff:
     
     def __init__(self, notes, clef='bass', time='4/4',
-                 tempo='4=90', midi=None):
+                 tempo=None, midi=None):
         '''
         Arguments:
         ----------

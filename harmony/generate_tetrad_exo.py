@@ -5,15 +5,24 @@ import score_creator as sc
 import harmony as ha
 
 
-# Get N random triads (fondamental = pitch + alteration, nature)
-N = 1000
-fonds = np.random.choice(ha.possible_pitchs, N*10)
-alters = np.random.choice(a=['natural', '#' , 'b' ], N*10,
-                          p=[0.5      , 0.25, 0.25])
-naturs = np.random.choice(a=['maj', 'min', 'dim', 'aug', 'sus2', 'sus4'], N*10,
-                          p=[0.3  , 0.3  , 0.1  , 0.1  , 0.1   , 0.1   ])
+# Nature of 4 notes chords
+tetrad_nature  = ['maj_7' , 'maj_maj7' , 'min_7']
+nature_weight  = [ 30     , 30         , 30     ]
+tetrad_nature += ['sus2_7', 'sus4_7', 'aug_7', 'ddim_7', 'dim_7' ]
+nature_weight += [ 10     , 10      , 20     , 20      , 20      ]
 
-# Generate the chords
+# Normalize the weights
+nature_weight = np.array(nature_weight)
+nature_weight = nature_weight / nature_weight.sum()
+# Get N random triads (fondamental = pitch + alteration, nature)
+
+N = 1000
+fonds  = np.random.choice(ha.possible_pitchs, 10*N)
+alters = np.random.choice(['natural', '#', 'b'], size=10*N,
+                          p=[0.5, 0.25, 0.25])
+naturs = np.random.choice(a=tetrad_nature, p=nature_weight, size=10*N)
+
+# Generate the chords removing e#, fb, b#, cb
 chords = []
 for i, (f, a, n) in enumerate(zip(fonds, alters, naturs)):
     if f=='f' and a=='b':
@@ -28,10 +37,11 @@ for i, (f, a, n) in enumerate(zip(fonds, alters, naturs)):
     if f=='b' and a=='#':
         f='c'
         a='natural'
-    chords.append( ha.triad.build(ha.note(f, a), n) )
+    chords.append( ha.tetrad.build(ha.note(f, a), n) )
     if i==N-1:
         break
-    
+
+
 # Create the lilypond string to be feed into a score
 chords_str = [chord.lilypond_str() for chord in chords]
 
@@ -44,6 +54,8 @@ str_staff_notes  = ''
 str_staff_chords_correc = ''
 str_staff_notes_correc  = ''
 for i, c_array in enumerate(np.array_split(chords_str, int(N/5))):
+
+    # For the question
     if i%2 == 0 :
         str_staff_chords += '1 \\bar ""'.join(c_array)
         str_staff_chords += '\\break'
@@ -53,8 +65,8 @@ for i, c_array in enumerate(np.array_split(chords_str, int(N/5))):
         str_staff_notes  += '\\break'
         str_staff_chords += '\\repeat unfold 5 { s1 }'
 
+    # For the correction : revert and color
     if i%2 == 0:
-        # Find a way to put color
         str_staff_notes_correc  += '\override NoteHead.color = #red \override Accidental.color = #red ' + '1 \\bar ""'.join(c_array)
         str_staff_notes_correc  += '\\break'
         str_staff_chords_correc += '\override ChordName.color = #black ' + '1 \\bar ""'.join(c_array)
@@ -91,5 +103,5 @@ sheet_corr = sc.sheet(score_corr, title='Lecture d\'accords - CORRECTION', compo
                  )
 
 # Save it
-sheet.save(fname='triads_exercies.pdf')
-sheet_corr.save(fname='triads_exercies_CORRECTION.pdf')
+sheet.save(fname='tetrads_exercies.pdf')
+sheet_corr.save(fname='tetrads_exercies_CORRECTION.pdf')

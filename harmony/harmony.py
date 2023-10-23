@@ -188,15 +188,17 @@ class note:
             if ntons == nt_target:
                 res = x
             elif ntons == nt_target + 0.5:
-                res = note(new_pitch, 'b', new_octave)
+                res = note(new_pitch, 'b' , new_octave)
             elif ntons == nt_target + 1:
                 res = note(new_pitch, 'bb', new_octave)
             elif ntons == nt_target - 0.5:
-                res = note(new_pitch, '#', new_octave)
+                res = note(new_pitch, '#' , new_octave)
             elif ntons == nt_target - 1:
                 res = note(new_pitch, '##', new_octave)
             else:
-                txt = 'The ton difference is not correct, please investigage'
+                txt  = f'Trying to determine the {interval} of {self}.'
+                txt += f'The ton difference between {self} and the target {x} leads to Delta={ntons-nt_target}, which not correct.'
+                txt += f'Only [+/- 0.5, +/- 1.0] are supported.'
                 raise NameError(txt)
             
             
@@ -251,7 +253,7 @@ class triad:
             self.sus4  = True
         else:
             txt = f'These 2 intervals {a} and {b} is not major/minor/augemented/dimished/sus2/sus4'
-            print(txt)
+            raise NameError(txt)
 
     def __str__(self):
         return self.name()
@@ -437,7 +439,7 @@ class tetrad:
         # Fondamental note
         txt = self.n1.pitch.upper()
         if self.n1.alteration != 'natural':
-            txt += self.n1.alteraction
+            txt += self.n1.alteration
 
         # Minor
         if self.is_minor():
@@ -524,7 +526,7 @@ class tetrad:
         nature = nature.lower()
         nature_options  = ['maj_7' , 'maj_maj7' , 'min_7' , 'min_maj7' ]
         nature_options += ['sus2_7', 'sus2_maj7', 'sus4_7', 'sus4_maj7']
-        nature_options += ['aug_7' , 'aug_maj7' , 'ddmi_7', 'dim_7'    ]
+        nature_options += ['aug_7' , 'aug_maj7' , 'ddim_7', 'dim_7'    ]
         if nature not in nature_options:
             raise NameError(f'ERROR: the tetrad nature {nature} is not supported, only {nature_options} are.')
         
@@ -559,11 +561,11 @@ class tetrad:
             n3 = n1.note_of('5J')
             n4 = n1.note_of('7M')
         elif nature=='sus4_7':
-            n2 = n1.note_of('4M')
+            n2 = n1.note_of('4J')
             n3 = n1.note_of('5J')
             n4 = n1.note_of('7m')
         elif nature=='sus4_maj7':
-            n2 = n1.note_of('4M')
+            n2 = n1.note_of('4J')
             n3 = n1.note_of('5J')
             n4 = n1.note_of('7M')
 
