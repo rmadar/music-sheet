@@ -11,9 +11,12 @@ An example can be found [here](exercise-reading/example_random_score.py), produc
 
 ## Practicing triad chords 
 
-The tool offer the possibility to write exercises sheet to find triads names from the 3 notes, or find the 3 notes from the name. The correction can also be generated.
+The tool offer the possibility to write exercises sheet to find triads names from the 3 notes, or find the 3 notes from the name.
 
 ![image](harmony/chords_examples.png)
+
+The correction can also be generated with solutions in red.
+
 ![image](harmony/chords_correction_example.png)
 
 ## Practingin rythm pattern
