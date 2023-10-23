@@ -1,7 +1,7 @@
 # Music Sheet with Lilypond and python
 
 This repository holds a simple (WIP) python interface to generate music sheets using [Lylipond](http://lilypond.org/),
-and export the corresponding audio file (mp3 format converted from MIDI using [timidity](https://launchpad.net/ubuntu/hirsute/+package/timidity)). This tool depends naturally on these two sofware. Caution: I am discovering Lylipond on the fly while I am writing this tool.
+and export the corresponding audio file (mp3 format converted from MIDI using [timidity](https://launchpad.net/ubuntu/hirsute/+package/timidity)). This tool depends naturally on these two sofwares.
 
 ## Practicing bass clef reading
 
@@ -19,7 +19,7 @@ The correction can also be generated with solutions in red.
 
 ![image](harmony/chords_correction_example.png)
 
-## Practingin rythm pattern
+## Practicinng rythm patterns
 
 Another use is to create simple and short phrases from basic pattern, based on 16th notes.
 
