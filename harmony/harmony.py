@@ -23,6 +23,17 @@ possible_intervals += ['6m', '6m', '6+']
 possible_intervals += ['7-', '7m', '7M']
 possible_intervals += ['8J']
 
+# Scale names - later add other modes
+possible_scales = ['major', 'minor_natural', 'minor_harmonic', 'minor_melodic']
+
+# Scales composition
+scales_intervals = {
+    'major'         : ['un', '2M', '3M', '4J', '5J', '6M', '7M'],
+    'minor_natural' : ['un', '2M', '3m', '4J', '5J', '6m', '7m'],
+    'minor_harmonic': ['un', '2M', '3m', '4J', '5J', '6m', '7M'],
+    'minor_melodic' : ['un', '2M', '3m', '4J', '5J', '6M', '7M'],
+}
+
 # Interval values (ton)
 # TO-DO :
 #   * add 9th, 11th and 13th
@@ -590,3 +601,29 @@ class tetrad:
         return tetrad(n1, n2, n3, n4)
 
     
+class scale:
+
+    def __init__(self, tonic, name):
+
+        # Checking if the name is supported
+        if name not in possible_scales:
+            raise NameError(f'{name} is not supported, only {possible_scales} are.')
+        
+        # Get all the intervals
+        self.intervals = scales_intervals[name]
+
+        # Store the list of note
+        self.notes_list = [tonic.note_of(i) for i in self.intervals]
+        
+        # Store the 7 degrees of the scale
+        self.n1 = tonic.note_of(self.intervals[0])
+        self.n2 = tonic.note_of(self.intervals[1])
+        self.n3 = tonic.note_of(self.intervals[2])
+        self.n4 = tonic.note_of(self.intervals[3])
+        self.n5 = tonic.note_of(self.intervals[4])
+        self.n6 = tonic.note_of(self.intervals[5])
+        self.n7 = tonic.note_of(self.intervals[6])
+
+        
+    def __str__(self):
+        return  ' '.join([str(n) for n in self.notes_list])
