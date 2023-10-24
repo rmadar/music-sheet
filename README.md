@@ -28,6 +28,11 @@ Another use is to create simple and short phrases from basic pattern, based on 1
 ## TO-DO List
 
  - [ ] Re-think the rythm pattern including with distinction of different durations
- - [ ] Add tetrads
- - [ ] Add scales
+ - [x] Add tetrads
+ - [x] Add scales
+ - [ ] Add chord inversion. Few remarks:
+    + from root to any inversion (not too difficult)
+    + from any inversion to root (more difficult)
+    + define a chords based on 3 notes, whathever their otcave
+    + above 3 notes, there is no unicity of chord definition (harmonic context needs to be taken into acount) !
 
