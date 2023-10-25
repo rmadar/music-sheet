@@ -1,3 +1,5 @@
+import numpy as np
+
 # Accepted pitch
 possible_pitchs = ['c', 'd', 'e', 'f', 'g', 'a', 'b']
 tons_steps = [1, 1, 0.5, 1, 1, 1, 0.5]
@@ -65,6 +67,49 @@ interval_values = {
 }
 
 
+def generate_random_piches(N, w_fonds=[1]*7, w_alter=[1, 1, 1]):
+    '''
+    Generate random pitches (both note+alteration),
+    removing Si# (Do), Dob (Si), Mi# (Fa) and Fab (Mi).
+     - w_fonds = weights for each note (7 elements)
+     - w_alter = weights for each alteration (3 elements = natural, #, b)
+    '''
+
+    # Convert the weight into numpy array
+    w_fonds = np.array( w_fonds )
+    w_alter = np.array( w_alter )
+    
+    # Fondmantals
+    w_fonds = w_fonds / w_fonds.sum()
+    fonds = np.random.choice(a=possible_pitchs, size=N*10, p=w_fonds)
+
+    # Alterations
+    w_alter = w_alter / w_alter.sum()
+    alters = np.random.choice(a=['natural', '#' , 'b' ], size=N*10, p=w_alter)
+
+    # Notes
+    notes = []
+    for i, (f, a) in enumerate(zip(fonds, alters)):
+        if f=='f' and a=='b':
+            f='e'
+            a='natural'
+        if f=='e' and a=='#':
+            f='f'
+            a='natural'
+        if f=='c' and a=='b':
+            f='b'
+            a='natural'
+        if f=='b' and a=='#':
+            f='c'
+            a='natural'
+        notes.append( note(f, a) )
+        if i==N-1:
+            break
+
+    # Return the result
+    return notes
+
+
 class note:
 
     # Constructor of the note
@@ -120,7 +165,15 @@ class note:
         # Return the result
         return f'{self.pitch}{alt}{octave}'
 
+
+    # Change the octave of the note
+    def shift_octave(self, i):
+        '''
+        Shift the note from i octave (positive or negative integer)
+        '''
+        return note(self.pitch, self.alteration, self.octave+i)
     
+
     # Compute the absolute distance (in tone) wrt the first C on a piano
     def absolute_tons(self):
         '''
@@ -228,6 +281,10 @@ class triad:
     # Constructor from 3 notes
     def __init__(self, n1, n2, n3):
 
+        '''
+        Return a 3-notes (n1, n2, n3) chords.
+        '''
+        
         # Filling the 3 notes
         self.n1 = n1
         self.n2 = n2
@@ -242,9 +299,6 @@ class triad:
         self.sus2  = False
         self.sus4  = False
 
-        # Which renversement ?
-        # To be implemented
-        
         # Getting the two intervales values
         a = n2.diff(n1)
         b = n3.diff(n2)
@@ -320,6 +374,17 @@ class triad:
     def lilypond_str(self):
         return  '<' + ' '.join([n.lilypond_str() for n in self.notes_list]) + '>'
     
+    def inversion(self, position='root'):
+        return 
+
+    def shift_octave(self, i):
+        '''
+        Shift all the note from i octaves (i: postive/negative integer)
+        '''
+        return triad(self.n1.shift_octave(i),
+                     self.n2.shift_octave(i),
+                     self.n3.shift_octave(i))        
+        
     @classmethod
     def build(self, I, nature, position='fond'):
         '''
@@ -521,6 +586,16 @@ class tetrad:
     
     def lilypond_str(self):
         return  '<' + ' '.join([n.lilypond_str() for n in self.notes_list]) + '>'
+    
+
+    def shift_octave(self, i):
+        '''
+        Shift all the note from i octaves (i: postive/negative integer)
+        '''
+        return tetrad(self.n1.shift_octave(i),
+                      self.n2.shift_octave(i),
+                      self.n3.shift_octave(i),
+                      self.n4.shift_octave(i))
     
     @classmethod
     def build_from_triad(self, triad, n4):
