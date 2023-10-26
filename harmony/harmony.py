@@ -348,8 +348,9 @@ class interval:
                     return 'desc' + int_name
                 else:
                     return int_name
-                
-        raise NameError('INTERVAL::Name():: Interval name was not found. Check if ther is not {E#, Fb, B#, Cb}')
+        txt  = 'INTERVAL::Name():: Interval name was not found.'
+        txt += 'Check if ther is not an {E#, Fb, B#, Cb} as lower note.'         
+        raise NameError(txt)
     
     def __str__(self):
         return f'"{self.n1} {self.n2}"'
