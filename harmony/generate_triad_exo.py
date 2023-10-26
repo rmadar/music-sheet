@@ -71,14 +71,12 @@ for clef in ['treble', 'bass']:
     # Creer le fichier final contenant cette partition
     sheet = sc.sheet(score, title='Lecture d\'accords', composer='',
                      hide_BarNumber=True,
-                     hide_TimeSignature=True
-                     )
+                     hide_TimeSignature=True)
     
     # Creer le fichier final contenant cette partition
     sheet_corr = sc.sheet(score_corr, title='Lecture d\'accords - CORRECTION', composer='',
                           hide_BarNumber=True,
-                          hide_TimeSignature=True
-                          )
+                          hide_TimeSignature=True)
 
     # Save it
     sheet.save(fname=f'triads_exercies_{clef}-clef.pdf')

@@ -25,23 +25,6 @@ possible_intervals += ['6m', '6m', '6+']
 possible_intervals += ['7-', '7m', '7M']
 possible_intervals += ['8J']
 
-# Scale names - later add other modes
-possible_scales = ['major', 'minor_natural', 'minor_harmonic', 'minor_melodic']
-nice_scales_names = {
-    'major'         : 'Major',
-    'minor_natural' : 'Natural Minor' ,
-    'minor_harmonic': 'Harmonic Minor',
-    'minor_melodic' : 'Melodic Minor' ,
-}
-
-# Scales composition
-scales_intervals = {
-    'major'         : ['un', '2M', '3M', '4J', '5J', '6M', '7M'],
-    'minor_natural' : ['un', '2M', '3m', '4J', '5J', '6m', '7m'],
-    'minor_harmonic': ['un', '2M', '3m', '4J', '5J', '6m', '7M'],
-    'minor_melodic' : ['un', '2M', '3m', '4J', '5J', '6M', '7M'],
-}
-
 # Interval values (ton)
 # TO-DO :
 #   * add 9th, 11th and 13th
@@ -67,6 +50,25 @@ interval_values = {
 }
 
 
+# Scale names - later add other modes
+possible_scales = ['major', 'minor_natural', 'minor_harmonic', 'minor_melodic']
+nice_scales_names = {
+    'major'         : 'Major',
+    'minor_natural' : 'Natural Minor' ,
+    'minor_harmonic': 'Harmonic Minor',
+    'minor_melodic' : 'Melodic Minor' ,
+}
+
+# Scales composition
+scales_intervals = {
+    'major'         : ['un', '2M', '3M', '4J', '5J', '6M', '7M'],
+    'minor_natural' : ['un', '2M', '3m', '4J', '5J', '6m', '7m'],
+    'minor_harmonic': ['un', '2M', '3m', '4J', '5J', '6m', '7M'],
+    'minor_melodic' : ['un', '2M', '3m', '4J', '5J', '6M', '7M'],
+}
+
+
+# Generating randoms note removing Si#/Cb and Mi#/Fab
 def generate_random_piches(N, w_fonds=[1]*7, w_alter=[1, 1, 1]):
     '''
     Generate random pitches (both note+alteration),
@@ -270,12 +272,103 @@ class note:
                 txt += f'The ton difference between {self} and the target {x} leads to Delta={ntons-nt_target}, which not correct.'
                 txt += f'Only [+/- 0.5, +/- 1.0] are supported.'
                 raise NameError(txt)
-            
-            
+
+        # Descending interval
+        else:
+            print('This part of the function "note_of()" is not written yet.')
+        
+
         # Return the result
         return res
 
 
+###############
+##  2 NOTES  ##
+###############
+
+class interval:
+
+    def __init__(self, n1, n2):
+        '''
+        Construct an interval of two notes.
+        '''
+        self.n1 = n1
+        self.n2 = n2
+        self.notes_list = [n1, n2]
+
+    def n_tons(self):
+        return self.n2.diff(self.n1)
+
+    def name(self):
+
+        '''
+        Return the name of the interval (e.g. 2m, 3M, etc ...).
+        If the first note is higher than the second, the note
+        are reversed (the interval is considered as descending).
+        If the two notes have the same name (e.g. E and Eb), the
+        returned name will be 'unknown' because it has no sense
+        harmonically (it would be the anharmony of a 2m in that eg E Db).
+        '''
+        
+        # Unisson
+        if self.n_tons() == 0:
+            return 'un'
+
+        if self.n1.pitch == self.n2.pitch:
+            return 'Unknown'
+        
+        # Second note lower than the first one, simply reverse it
+        interval_tmp = self
+        descending = False
+        if self.n_tons() < 0:
+            interval_tmp = interval(self.n2, self.n1)
+            descending = True
+            
+        # Get the number of notes between n1 and n2 (w/o # and b)
+        i1 = possible_pitchs.index(interval_tmp.n1.pitch)
+        i2 = possible_pitchs.index(interval_tmp.n2.pitch)
+        
+        # Get all the possible interval candidates (without all qualifications)
+        inter = i2-i1+1
+        if i2 < i1:
+            inter = (i2+7) - i1 + 1
+        interval_candidates = {k:v for k, v in interval_values.items() if str(inter) in k}
+        if len(interval_candidates) == 0:
+            txt  = f'INTERVAL::Name():: interval_candidates has a size of 0 for '
+            txt += f'(n1, n2)=({interval_tmp.n1}, {interval_tmp.n2}), inter={inter}'
+            print(txt)
+            raise NameError('INTERVAL::Name():: No interval candidates were found')
+
+        
+        # Check which qualification ?
+        for int_name in interval_candidates.keys():
+            n2_tmp = interval_tmp.n1.note_of(int_name)
+            if n2_tmp.diff(interval_tmp.n1) == interval_tmp.n_tons():
+                if descending:
+                    return 'desc' + int_name
+                else:
+                    return int_name
+                
+        raise NameError('INTERVAL::Name():: Interval name was not found. Check if ther is not {E#, Fb, B#, Cb}')
+    
+    def __str__(self):
+        return f'"{self.n1} {self.n2}"'
+
+    def lilypond_str(self):
+        return f'< {self.n1.lilypond_str()} {self.n2.lilypond_str()} >'
+    
+    @classmethod
+    def build(self, fond, nature):
+        if nature in possible_intervals:
+            return interval(fond, fond.note_of(nature))
+        else:
+            raise NameError(f'ERROR: interval {nature} is not supported. Only {possible_intervals} are.')
+    
+
+###############
+##  3 NOTES  ##
+###############
+    
 class triad:
 
     # Constructor from 3 notes
@@ -416,7 +509,20 @@ class triad:
             raise NameError(f'nature of triad cannot be {nature}')
 
         return triad(n1, n2, n3)
+
+    @classmethod
+    def build_from_intervals(self, fond, i1, i2):
+        '''
+        Build a triad corresponding to a fondamental 
+        with 2 intervals with respect to the fondamental.
+        e.g. : a Cmajor would be build_from_intervals(C, '3M', '5J')
+        '''
+        return triad(fond, fond.note_of(i1), fond.note_of(i2))
     
+    
+###############
+##  4 NOTES  ##
+###############    
 
 class tetrad:
 
