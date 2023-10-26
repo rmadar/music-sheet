@@ -92,19 +92,15 @@ def generate_random_piches(N, w_fonds=[1]*7, w_alter=[1, 1, 1]):
     # Notes
     notes = []
     for i, (f, a) in enumerate(zip(fonds, alters)):
-        if f=='f' and a=='b':
-            f='e'
-            a='natural'
-        if f=='e' and a=='#':
-            f='f'
-            a='natural'
-        if f=='c' and a=='b':
-            f='b'
-            a='natural'
-        if f=='b' and a=='#':
-            f='c'
-            a='natural'
-        notes.append( note(f, a) )
+
+        # note
+        n = note(f, a)
+
+        # Removing E#, Fb, Cb and B#
+        if n.is_Esharp() or n.is_Fflat() or n.is_Cflat() or n.is_Bsharp():
+            continue
+    
+        notes.append(n)
         if i==N-1:
             break
 
@@ -167,6 +163,17 @@ class note:
         # Return the result
         return f'{self.pitch}{alt}{octave}'
 
+    def is_Esharp(self):
+        return ('e' in self.pitch) and self.alteration=='#'
+
+    def is_Fflat(self):
+        return ('f' in self.pitch) and self.alteration=='b'
+
+    def is_Bsharp(self):
+        return ('b' in self.pitch) and self.alteration=='#'
+    
+    def is_Cflat(self):
+        return ('c' in self.pitch) and self.alteration=='b'
 
     # Change the octave of the note
     def shift_octave(self, i):
@@ -305,9 +312,15 @@ class interval:
         Return the name of the interval (e.g. 2m, 3M, etc ...).
         If the first note is higher than the second, the note
         are reversed (the interval is considered as descending).
-        If the two notes have the same name (e.g. E and Eb), the
-        returned name will be 'unknown' because it has no sense
-        harmonically (it would be the anharmony of a 2m in that eg E Db).
+
+        In 2 cases the result 'N.A.' is returned:
+          1. If the two notes have the same name (e.g. E and Eb), 
+          2. if the lower note is E#, Fb, B# or Cb
+        
+        In both cases, it has no sense harmonically:
+          1. it would be the anharmony of proper interval (e.g. E Db, a 2m)
+          2. those notes the anharmony of F, E, C and B and can only appear 
+             as a second note
         '''
         
         # Unisson
@@ -315,7 +328,7 @@ class interval:
             return 'un'
 
         if self.n1.pitch == self.n2.pitch:
-            return 'Unknown'
+            return 'N.A.'
         
         # Second note lower than the first one, simply reverse it
         interval_tmp = self
@@ -323,7 +336,12 @@ class interval:
         if self.n_tons() < 0:
             interval_tmp = interval(self.n2, self.n1)
             descending = True
-            
+
+        # if the lower note is E#, Fb, Cb ro B#, return unknown
+        lown = interval_tmp.n1
+        if lown.is_Esharp() or lown.is_Bsharp() or lown.is_Fflat() or lown.is_Cflat():
+            return 'N.A.'
+        
         # Get the number of notes between n1 and n2 (w/o # and b)
         i1 = possible_pitchs.index(interval_tmp.n1.pitch)
         i2 = possible_pitchs.index(interval_tmp.n2.pitch)

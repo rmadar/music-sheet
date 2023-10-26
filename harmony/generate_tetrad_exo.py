@@ -89,5 +89,5 @@ for clef in ['treble', 'bass']:
                           hide_TimeSignature=True)
 
     # Save it
-    sheet.save(fname=f'tetrads_exercies_{clef}-clef.pdf')
-    sheet_corr.save(fname=f'tetrads_exercies_{clef}-clef_CORRECTION.pdf')
+    sheet.save(fname=f'tetrads_exercies_{clef}-clef.ly')
+    sheet_corr.save(fname=f'tetrads_exercies_{clef}-clef_CORRECTION.ly')
