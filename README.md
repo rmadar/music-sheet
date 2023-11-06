@@ -28,6 +28,7 @@ Another use is to create simple and short phrases from basic pattern, based on 1
 ## TO-DO List
 
  - [ ] Re-think the rythm pattern including with distinction of different durations
+ - [ ] solve the issue of the LA_diese.note_of('6+') -> no augmented sixth
  - [x] Add tetrads
  - [x] Add scales
  - [ ] Add chord inversion. Few remarks:

@@ -42,7 +42,6 @@ interval_values = {
     '5+':   4,
     '6m':   4,
     '6M': 4.5,
-    '6+':   5,
     '7-': 4.5,
     '7m':   5,
     '7M': 5.5,
@@ -163,6 +162,7 @@ class note:
         # Return the result
         return f'{self.pitch}{alt}{octave}'
 
+
     def is_Esharp(self):
         return ('e' in self.pitch) and self.alteration=='#'
 
@@ -224,10 +224,14 @@ class note:
         if interval not in possible_intervals:
             NameError(f'{interval} is not supported, only {possible_intervals} are.')
 
-        # If unisson rerturn the same note
+        # If unisson return the same note
         if interval == 'un':
             return self
-            
+
+        # If octave return the same note shifted by 1 octave
+        if interval == '8J':
+            return self.shift_octave(+1)
+
         # Number of notes to be incremented (eg. 1 for a second)
         index_to_add = int(interval[0])-1
 
@@ -275,9 +279,10 @@ class note:
             elif ntons == nt_target - 1:
                 res = note(new_pitch, '##', new_octave)
             else:
-                txt  = f'Trying to determine the {interval} of {self}.'
-                txt += f'The ton difference between {self} and the target {x} leads to Delta={ntons-nt_target}, which not correct.'
-                txt += f'Only [+/- 0.5, +/- 1.0] are supported.'
+                txt  = f'\nNote::note_of()::Trying to determine the {interval} of {self}.\n'
+                txt += f'                 The ton difference between {self} and the target {x}\n'
+                txt += f'                 leads to Delta={ntons-nt_target}, which not correct.\n'
+                txt += f'                 Only [+/- 0.5, +/- 1.0] are supported.\n'
                 raise NameError(txt)
 
         # Descending interval
@@ -327,6 +332,9 @@ class interval:
         if self.n_tons() == 0:
             return 'un'
 
+        if self.n_tons() == 6:
+            return '8J'
+        
         if self.n1.pitch == self.n2.pitch:
             return 'N.A.'
         
@@ -373,8 +381,21 @@ class interval:
     def __str__(self):
         return f'"{self.n1} {self.n2}"'
 
-    def lilypond_str(self):
-        return f'< {self.n1.lilypond_str()} {self.n2.lilypond_str()} >'
+    def lilypond_str(self, with_name=False, name_color='black'):
+        '''
+        When with_name is True, it adds the name of the scale
+        on top of the first note. 'name_color' allows to change
+        the color of the text.
+        '''
+        if with_name:
+            name = self.name().replace('b', '"\\flat"').replace('#', '"\\sharp"')
+            txt  = f'^\\markup{{ \\with-color "{name_color}" \\concat{{"{name}"}} }}'
+            return f'< {self.n1.lilypond_str()} {self.n2.lilypond_str()} >1' + txt
+        else:
+            return f'< {self.n1.lilypond_str()} {self.n2.lilypond_str()} >1'
+        
+    def shift_octave(self, i):
+        return interval(self.n1.shift_octave(i), self.n2.shift_octave(i))
     
     @classmethod
     def build(self, fond, nature):
