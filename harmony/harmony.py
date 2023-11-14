@@ -21,7 +21,7 @@ possible_intervals += ['2m', '2M', '2+']
 possible_intervals += ['3m', '3M']
 possible_intervals += ['4J', '4+']
 possible_intervals += ['5-', '5J', '5+']
-possible_intervals += ['6m', '6m', '6+']
+possible_intervals += ['6m', '6m']
 possible_intervals += ['7-', '7m', '7M']
 possible_intervals += ['8J']
 
@@ -49,14 +49,18 @@ interval_values = {
 }
 
 
-# Scale names - later add other modes
-possible_scales = ['major', 'minor_natural', 'minor_harmonic', 'minor_melodic']
+# Scale names - later add other scales and modes
 nice_scales_names = {
     'major'         : 'Major',
     'minor_natural' : 'Natural Minor' ,
     'minor_harmonic': 'Harmonic Minor',
     'minor_melodic' : 'Melodic Minor' ,
+    'major_penta'   : 'Pentatonic Major',
+    'minor_penta'   : 'Pentatonic Minor',
+    'major_blues'   : 'Blues Major',
+    'minor_blues'   : 'Blues Minor',
 }
+possible_scales = [k for k in nice_scales_names.keys()]
 
 # Scales composition
 scales_intervals = {
@@ -64,6 +68,10 @@ scales_intervals = {
     'minor_natural' : ['un', '2M', '3m', '4J', '5J', '6m', '7m'],
     'minor_harmonic': ['un', '2M', '3m', '4J', '5J', '6m', '7M'],
     'minor_melodic' : ['un', '2M', '3m', '4J', '5J', '6M', '7M'],
+    'major_penta'   : ['un', '2M', '3M', '5J', '6M'],
+    'minor_penta'   : ['un', '3m', '4J', '5J', '7m'],
+    'major_blues'   : ['un', '2M', '2+', '3M', '5J', '6M'],
+    'minor_blues'   : ['un', '3m', '4J', '4+', '5J', '7m'],
 }
 
 
@@ -845,23 +853,15 @@ class scale:
         # Store the list of note
         self.notes_list = [tonic.note_of(i) for i in self.intervals]
         
-        # Store the 7 degrees of the scale
-        self.n1 = tonic.note_of(self.intervals[0])
-        self.n2 = tonic.note_of(self.intervals[1])
-        self.n3 = tonic.note_of(self.intervals[2])
-        self.n4 = tonic.note_of(self.intervals[3])
-        self.n5 = tonic.note_of(self.intervals[4])
-        self.n6 = tonic.note_of(self.intervals[5])
-        self.n7 = tonic.note_of(self.intervals[6])
-        
     def __str__(self):
         return  ' '.join([str(n) for n in self.notes_list])
 
     def name(self):
         # Fondamental note
-        txt = self.n1.pitch.upper()
-        if self.n1.alteration != 'natural':
-            txt += self.n1.alteration
+        n1 = self.notes_list[0]
+        txt = n1.pitch.upper()
+        if n1.alteration != 'natural':
+            txt += n1.alteration
         txt += ' ' + nice_scales_names[self.nature]
         return txt
 
@@ -873,7 +873,7 @@ class scale:
         '''
         if with_name:
             name = self.name().replace('b', '"\\flat"').replace('#', '"\\sharp"')
-            txt  = f'{self.n1.lilypond_str()}1^\\markup{{ \\with-color "{name_color}" \\concat{{"{name}"}} }} \\bar "" '
+            txt  = f'{self.notes_list[0].lilypond_str()}1^\\markup{{ \\with-color "{name_color}" \\concat{{"{name}"}} }} \\bar "" '
             txt += '1 \\bar "" '.join([n.lilypond_str() for n in self.notes_list[1:]])
             return txt
         else :

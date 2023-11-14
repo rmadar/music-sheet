@@ -4,37 +4,16 @@ import numpy as np
 import score_creator as sc
 import harmony as ha
 
-
+# Generate the scales
 N = 100
-fonds  = np.random.choice(ha.possible_pitchs, 10*N)
-alters = np.random.choice(['natural', '#', 'b'], size=10*N,
-                          p=[0.5, 0.25, 0.25])
-naturs = np.random.choice(a=ha.possible_scales, size=10*N)
+fonds = ha.generate_random_piches(N)
+natures = np.random.choice(a=ha.possible_scales, size=10*N)
+scales = [ha.scale(f, n) for f, n in zip(fonds, natures)]
 
-# Generate the scales removing e#, fb, b#, cb
-scales = []
-for i, (f, a, n) in enumerate(zip(fonds, alters, naturs)):
-    if f=='f' and a=='b':
-        f='e'
-        a='natural'
-    if f=='e' and a=='#':
-        f='f'
-        a='natural'
-    if f=='c' and a=='b':
-        f='b'
-        a='natural'
-    if f=='b' and a=='#':
-        f='c'
-        a='natural'
-    scales.append( ha.scale(ha.note(f, a), n) )
-    if i==N-1:
-        break
-
-
-# Loop over the chords and build
-#  - staff string with notes but no chord names
-#  - staff string without note with chord names
-#  - switch every 5 chords and break the line
+# Loop over the scales and build
+#  - staff string with notes but no scale names
+#  - staff string without note with scales names
+#  - switch every 2 scales and break the line
 str_staff_scales = ''
 str_staff_corr   = ''
 for i, ss in enumerate(np.array_split(scales, int(N/2))):

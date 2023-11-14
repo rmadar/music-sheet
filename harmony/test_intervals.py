@@ -1,11 +1,13 @@
 import harmony as ha
 
 LA  = ha.note('a')
+LAd = ha.note('a', '#')
 DO  = ha.note('c')
 MI  = ha.note('e')
 MIb = ha.note('e', 'b')
 MId = ha.note('e', '#')
 
+print(LAd.note_of('6+')) # pose encore un probleme
 
 # Basic checks on notes
 print( LA, MIb )
