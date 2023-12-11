@@ -1,23 +1,60 @@
 # Music Sheet with Lilypond and python
 
 This repository holds a simple (WIP) python interface to generate music sheets using [Lylipond](http://lilypond.org/),
-and export the corresponding audio file (mp3 format converted from MIDI using [timidity](https://launchpad.net/ubuntu/hirsute/+package/timidity)). This tool depends naturally on these two sofwares.
+and export the corresponding audio file (mp3 format converted from MIDI using [timidity](https://launchpad.net/ubuntu/hirsute/+package/timidity)). This tool depends naturally on these two softwares.
 
-## Practicing bass clef reading
+## Practicing triad/tetrads chords and scales 
 
-The first use case is to be able to generate random scores with a given level of difficulty for both note range and rythm pattern.
-An example can be found [here](exercise-reading/example_random_score.py), producing this score:
-![image](reading-bass/example.jpg)
+### What is implemented?
 
-## Practicing triad chords 
+- 6 triads :
+   1. major
+   1. minor
+   1. diminished
+   1. augmented
+   1. suspended2
+   1. suspended4
 
-The tool offer the possibility to write exercises sheet to find triads names from the 3 notes, or find the 3 notes from the name.
+- 13 tetrads:
+  1. major 7
+  2. major maj7
+  3. minor 7
+  4. minor maj7
+  5. suspended4 7
+  6. augmented 7
+  8. augmented maj7
+  9. half-diminished 7
+  9. diminished 7
+  10. diminished maj7
+  11. major 6
+  12. minor 6
+  13. minor min6
+
+- 8 scales
+  1. major
+  2. natural minor
+  3. harmonic minor
+  4. melodic minor
+  5. penta major
+  6. penta minor
+  7. blues major
+  8. blues minor
+
+## Example of triads
+
+The tool offers the possibility to write exercises sheet to find triads names from the 3 notes, or find the 3 notes from the name.
 
 ![image](harmony/chords_examples.png)
 
 The correction can also be generated with solutions in red.
 
 ![image](harmony/chords_correction_example.png)
+
+## Practicing bass clef reading
+
+The first use case is to be able to generate random scores with a given level of difficulty for both note range and rythm pattern.
+An example can be found [here](exercise-reading/example_random_score.py), producing this score:
+![image](reading-bass/example.jpg)
 
 ## Practicinng rythm patterns
 

@@ -762,17 +762,21 @@ class tetrad:
     def build(self, n1, nature, position='fondamental'):
         '''
         n1       = fondamental of the chords
-        nature   = maj_7 , maj_maj7 , min_7 , min_maj7 , 
-                   sus2_7, sus2_maj7, sus4_7, sus4_maj7,
-                   aug_7 , aug_maj7 , ddim_7  , dim_7,
+        nature   = maj_7 , maj_maj7 , min_7 , min_maj7, sus4_7,
+                   aug_7 , aug_maj7 , ddim_7  , dim_7, dim_maj7
+                   maj_7 , min_6    , min_min6,
+                   # sus2_7, sus2_maj7, sus4_maj7,
+
         position = choice of the lower note (bass = I, III, V or VII) 
         '''
 
         # Check the nature of the tetrad is one of the possibility
         nature = nature.lower()
-        nature_options  = ['maj_7' , 'maj_maj7' , 'min_7' , 'min_maj7' ]
-        nature_options += ['sus2_7', 'sus2_maj7', 'sus4_7', 'sus4_maj7']
-        nature_options += ['aug_7' , 'aug_maj7' , 'ddim_7', 'dim_7'    ]
+        nature_options  = ['maj_7' , 'maj_maj7' , 'min_7'   , 'min_maj7', 'sus4_7' ]
+        nature_options += ['aug_7' , 'aug_maj7' , 'ddim_7'  , 'dim_7', 'dim_maj7'  ]
+        nature_options += ['maj_6' , 'min_6'    , 'min_min6']
+        nature_options += ['sus2_7', 'sus2_maj7', 'sus4_maj7'] # Apparently not found written
+        
         if nature not in nature_options:
             raise NameError(f'ERROR: the tetrad nature {nature} is not supported, only {nature_options} are.')
         
@@ -832,7 +836,25 @@ class tetrad:
             n2 = n1.note_of('3m')
             n3 = n1.note_of('5-')
             n4 = n1.note_of('7-')    
-        
+        elif nature=='dim_maj7':
+            n2 = n1.note_of('3m')
+            n3 = n1.note_of('5-')
+            n4 = n1.note_of('7M')    
+
+        # Chords of 6th
+        elif nature=='maj_6':
+            n2 = n1.note_of('3M')
+            n3 = n1.note_of('5J')
+            n4 = n1.note_of('6M')
+        elif nature=='min_6':
+            n2 = n1.note_of('3m')
+            n3 = n1.note_of('5J')
+            n4 = n1.note_of('6M')
+        elif nature=='min_min6':
+            n2 = n1.note_of('3m')
+            n3 = n1.note_of('5J')
+            n4 = n1.note_of('6m')    
+
         return tetrad(n1, n2, n3, n4)
 
     

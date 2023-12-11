@@ -5,10 +5,12 @@ import score_creator as sc
 import harmony as ha
 
 # Nature of 4 notes chords
-tetrad_nature  = ['maj_7' , 'maj_maj7' , 'min_7']
-nature_weight  = [ 30     , 30         , 30     ]
-tetrad_nature += ['sus2_7', 'sus4_7', 'aug_7', 'ddim_7', 'dim_7' ]
-nature_weight += [ 10     , 10      , 20     , 20      , 20      ]
+tetrad_nature  = ['maj_7' , 'maj_maj7' ,'min_7', 'min_maj7', 'sus4_7']
+nature_weight  = [ 30     , 30         , 30     ,  30       , 30      ]
+tetrad_nature += ['aug_7', 'aug_maj7'  ,'ddim_7', 'dim_7', 'dim_maj7' ]
+nature_weight += [30      , 30         , 30      , 30     , 30 ]
+tetrad_nature += ['maj_6' , 'min_6'    ,'min_min6']
+nature_weight += [30      , 30         , 30       ]
 
 # Normalize the weights
 nature_weight = np.array(nature_weight)
@@ -41,7 +43,7 @@ for clef in ['treble', 'bass']:
     str_staff_notes  = ''
     str_staff_chords_correc = ''
     str_staff_notes_correc  = ''
-    for i, c_array in enumerate(np.array_split(chords_str, int(N/5))):
+    for i, c_array in enumerate(np.array_split(chords_str, int(N/6))):
 
         # For the question
         if i%2 == 0 :
