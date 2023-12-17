@@ -106,11 +106,17 @@ def generate_random_piches(N, w_fonds=[1]*7, w_alter=[1, 1, 1]):
         # Removing E#, Fb, Cb and B#
         if n.is_Esharp() or n.is_Fflat() or n.is_Cflat() or n.is_Bsharp():
             continue
-    
-        notes.append(n)
-        if i==N-1:
+        else: 
+            notes.append(n)
+            
+        if len(notes)==N:
             break
-
+            
+    # Checking the array has the proper wanted size
+    # after filtering
+    if len(notes) != N:
+        raise NameError('harmony::generate_random_piches():: Not enough generated pitches')
+        
     # Return the result
     return notes
 

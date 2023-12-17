@@ -33,15 +33,16 @@ for clef in ['treble', 'bass']:
     str_staff_notes  = ''
     str_staff_chords_correc = ''
     str_staff_notes_correc  = ''
-    for i, c_array in enumerate(np.array_split(chords_str, int(N/5))):
+    n_per_line = 5
+    for i, c_array in enumerate(np.array_split(chords_str, int(N/n_per_line))):
         if i%2 == 0 :
-            str_staff_chords += '1 \\bar ""'.join(c_array)
+            str_staff_chords += ' 1 \\bar ""'.join(c_array)
             str_staff_chords += '\\break'
-            str_staff_notes  += '\\repeat unfold 5 { s1 }'
+            str_staff_notes  += f'\\repeat unfold {c_array.size} ' + ' { \\bar "" s1 }'
         else:
-            str_staff_notes  += '1 \\bar ""'.join(c_array)
+            str_staff_notes  += ' 1 \\bar ""'.join(c_array)
             str_staff_notes  += '\\break'
-            str_staff_chords += '\\repeat unfold 5 { s1 }'
+            str_staff_chords += f'\\repeat unfold {c_array.size} ' + ' { \\bar "" s1 }'
 
         if i%2 == 0:
             # Find a way to put color
@@ -69,12 +70,12 @@ for clef in ['treble', 'bass']:
     score_corr = sc.score([staff_chords_corr, staff_notes_corr])
     
     # Creer le fichier final contenant cette partition
-    sheet = sc.sheet(score, title='Lecture d\'accords', composer='',
+    sheet = sc.sheet(score, title='Triades', composer='',
                      hide_BarNumber=True,
                      hide_TimeSignature=True)
     
     # Creer le fichier final contenant cette partition
-    sheet_corr = sc.sheet(score_corr, title='Lecture d\'accords - CORRECTION', composer='',
+    sheet_corr = sc.sheet(score_corr, title='Triades - CORRECTION', composer='',
                           hide_BarNumber=True,
                           hide_TimeSignature=True)
 
