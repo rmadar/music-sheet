@@ -15,19 +15,7 @@ alteration_values = {
     'natural': 0,
 }
 
-# Intervals names
-possible_intervals  = ['un']
-possible_intervals += ['2m', '2M', '2+']
-possible_intervals += ['3m', '3M']
-possible_intervals += ['4J', '4+']
-possible_intervals += ['5-', '5J', '5+']
-possible_intervals += ['6m', '6m']
-possible_intervals += ['7-', '7m', '7M']
-possible_intervals += ['8J']
-
 # Interval values (ton)
-# TO-DO :
-#   * add 9th, 11th and 13th
 interval_values = {
     'un':   0,
     '2m': 0.5,
@@ -46,10 +34,19 @@ interval_values = {
     '7m':   5,
     '7M': 5.5,
     '8J':   6,
+    '9m': 6.5,
+    '9M': 7.0,
+    '9+': 7.5,
 }
+possible_intervals = [k for k in interval_values.keys()]
 
+# Triade/tetrads names
+possible_triads   = ['maj', 'min', 'aug', 'dim', 'sus2', 'sus4']
+possible_tetrads  = ['maj_7', 'maj_maj7', 'min_7' , 'min_maj7', 'sus4_7' ]
+possible_tetrads += ['aug_7', 'aug_maj7', 'ddim_7', 'dim_7', 'dim_maj7'  ]
+possible_tetrads += ['maj_6', 'min_6'   , 'min_min6']
 
-# Scale names - later add other scales and modes
+# Scale/modes names
 nice_scales_names = {
     'major'         : 'Major',
     'minor_natural' : 'Natural Minor' ,
@@ -59,10 +56,17 @@ nice_scales_names = {
     'minor_penta'   : 'Pentatonic Minor',
     'major_blues'   : 'Blues Major',
     'minor_blues'   : 'Blues Minor',
+    'ionian'        : 'Ionian (I) Mode',
+    'dorian'        : 'Dorian (II) Mode',
+    'phrygian'      : 'Phyrigian (III) Mode',
+    'lydian'        : 'Lydian (IV) Mode',
+    'myxolidian'    : 'Myxolidian (V) Mode',
+    'eolian'        : 'Eolian (VI) Mode',
+    'lorcian'       : 'Locrian (VI) Mode',
 }
 possible_scales = [k for k in nice_scales_names.keys()]
 
-# Scales composition
+# Scales/modes composition
 scales_intervals = {
     'major'         : ['un', '2M', '3M', '4J', '5J', '6M', '7M'],
     'minor_natural' : ['un', '2M', '3m', '4J', '5J', '6m', '7m'],
@@ -72,6 +76,13 @@ scales_intervals = {
     'minor_penta'   : ['un', '3m', '4J', '5J', '7m'],
     'major_blues'   : ['un', '2M', '2+', '3M', '5J', '6M'],
     'minor_blues'   : ['un', '3m', '4J', '4+', '5J', '7m'],
+    'ionian'        : ['un', '2M', '3M', '4J', '5J', '6M', '7M'],
+    'dorian'        : ['un', '2M', '3m', '4J', '5J', '6M', '7m'],
+    'phrygian'      : ['un', '2m', '3m', '4J', '5J', '6M', '7m'],
+    'lydian'        : ['un', '2M', '3M', '4+', '5J', '6M', '7M'],
+    'myxolidian'    : ['un', '2M', '3M', '4J', '5J', '6M', '7m'],
+    'eolian'        : ['un', '2M', '3m', '4J', '5J', '6m', '7m'],
+    'lorcian'       : ['un', ],
 }
 
 
@@ -771,20 +782,14 @@ class tetrad:
         nature   = maj_7 , maj_maj7 , min_7 , min_maj7, sus4_7,
                    aug_7 , aug_maj7 , ddim_7  , dim_7, dim_maj7
                    maj_7 , min_6    , min_min6,
-                   # sus2_7, sus2_maj7, sus4_maj7,
+                   #sus2_7, sus2_maj7
 
         position = choice of the lower note (bass = I, III, V or VII) 
         '''
 
         # Check the nature of the tetrad is one of the possibility
-        nature = nature.lower()
-        nature_options  = ['maj_7' , 'maj_maj7' , 'min_7'   , 'min_maj7', 'sus4_7' ]
-        nature_options += ['aug_7' , 'aug_maj7' , 'ddim_7'  , 'dim_7', 'dim_maj7'  ]
-        nature_options += ['maj_6' , 'min_6'    , 'min_min6']
-        nature_options += ['sus2_7', 'sus2_maj7', 'sus4_maj7'] # Apparently not found written
-        
-        if nature not in nature_options:
-            raise NameError(f'ERROR: the tetrad nature {nature} is not supported, only {nature_options} are.')
+        if nature.lower() not in possible_tetrads:
+            raise NameError(f'ERROR: the tetrad nature {nature} is not supported, only {possible_tetrads} are.')
         
         # Initialize notes values
         n2, n3, n4 = n1, n1, n1
@@ -863,6 +868,40 @@ class tetrad:
 
         return tetrad(n1, n2, n3, n4)
 
+    
+class extended_chords:
+
+    def __init__(self, n1, basis_nature, interval_ext_list):
+        '''
+        Arguments:
+         - n1: tonic of the chords
+         - basis_nature: nature of the chords to extend (triad or tetrad)
+         - interval_ext_list: list of interval to be added
+        '''
+
+        # Chord to be extended
+        if basis_nature in possible_triads:
+            self.basis_chord = triad.build(n1, nature)
+        elif basis_nature in possible_tetrads:
+            self.basis_chords = tetrad.build(n1, nature)
+        else:
+            raise NameError(f'extended_chords:: {nature} is not supported, only {possible_triads} and {possible_tetrads} are.')
+        
+        # Extension notes
+        self.extensions = [n1.note_of(interval) for interval in interval_ext_list]
+ 
+        # Full list of notes
+        self.notes_list = self.basis_chord.notes_list + self.extensions
+
+
+    def lilypond_str(self):
+        return  '<' + ' '.join([n.lilypond_str() for n in self.notes_list]) + '>'
+
+        
+    def build(self, n1, nature):
+        
+
+        
     
 class scale:
 
