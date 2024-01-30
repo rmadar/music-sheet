@@ -16,46 +16,46 @@ and export the corresponding audio file (mp3 format converted from MIDI using [t
    1. suspended4
 
 - 13 tetrads:
-  1. major 7
-  2. major maj7
-  3. minor 7
-  4. minor maj7
-  5. suspended4 7
-  6. augmented 7
-  8. augmented maj7
-  9. half-diminished 7
-  9. diminished 7
-  10. diminished maj7
-  11. major 6
-  12. minor 6
-  13. minor min6
+   1. major 7
+   2. major maj7
+   3. minor 7
+   4. minor maj7
+   5. suspended4 7
+   6. augmented 7
+   8. augmented maj7
+   9. half-diminished 7
+   9. diminished 7
+   10. diminished maj7
+   11. major 6
+   12. minor 6
+   13. minor min6
 
 - 8 chords of ninth *on going*:
- 1. add9
- 2. 7
- 3. 69
- 4. major 9
- 5. etc ...
+   1. add9
+   2. 7
+   3. 69
+   4. major 9
+   5. etc ...
  
 
 - 8 scales
-  1. major
-  2. natural minor
-  3. harmonic minor
-  4. melodic minor
-  5. penta major
-  6. penta minor
-  7. blues major
-  8. blues minor
+   1. major
+   2. natural minor
+   3. harmonic minor
+   4. melodic minor
+   5. penta major
+   6. penta minor
+   7. blues major
+   8. blues minor
 
 - 7 modes:
- 1. ionian
- 2. dorian
- 3. phrygian
- 4. lydian
- 5. myxolydian
- 6. eolian
- 7. locrian
+   1. ionian
+   2. dorian
+   3. phrygian
+   4. lydian
+   5. myxolydian
+   6. eolian
+   7. locrian
  
 
 
