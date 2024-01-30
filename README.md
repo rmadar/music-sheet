@@ -30,6 +30,14 @@ and export the corresponding audio file (mp3 format converted from MIDI using [t
   12. minor 6
   13. minor min6
 
+- 8 chords of ninth *on going*:
+ 1. add9
+ 2. 7
+ 3. 69
+ 4. major 9
+ 5. etc ...
+ 
+
 - 8 scales
   1. major
   2. natural minor
@@ -39,6 +47,18 @@ and export the corresponding audio file (mp3 format converted from MIDI using [t
   6. penta minor
   7. blues major
   8. blues minor
+
+- 7 modes:
+ 1. ionian
+ 2. dorian
+ 3. phrygian
+ 4. lydian
+ 5. myxolydian
+ 6. eolian
+ 7. locrian
+ 
+
+
 
 ## Example of triads
 
