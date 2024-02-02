@@ -7,7 +7,7 @@ and export the corresponding audio file (mp3 format converted from MIDI using [t
 
 ### What is implemented?
 
-- 6 triads :
+#### 6 triads :
    1. major
    1. minor
    1. diminished
@@ -15,7 +15,7 @@ and export the corresponding audio file (mp3 format converted from MIDI using [t
    1. suspended2
    1. suspended4
 
-- 13 tetrads:
+#### 13 tetrads:
    1. major 7
    2. major maj7
    3. minor 7
@@ -30,7 +30,7 @@ and export the corresponding audio file (mp3 format converted from MIDI using [t
    12. minor 6
    13. minor min6
 
-- 12 chords of ninth:
+#### 12 chords of ninth:
    1. major add9 (ie major+9)
    2. major maj9 (ie maj7 w/ 9)
    3. major 69 (ie 6 w/ 9)
@@ -44,7 +44,7 @@ and export the corresponding audio file (mp3 format converted from MIDI using [t
    11. sus4 9 (ie suspended4 7 w/ 9)
    12. sus4 b9 (ie suspended4 7 w/ b9)
 
-- 8 scales
+#### 8 scales
    1. major
    2. natural minor
    3. harmonic minor
@@ -54,7 +54,7 @@ and export the corresponding audio file (mp3 format converted from MIDI using [t
    7. blues major
    8. blues minor
 
-- 7 modes:
+#### 7 modes:
    1. ionian
    2. dorian
    3. phrygian
