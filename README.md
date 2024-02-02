@@ -33,22 +33,28 @@ and export the corresponding audio file (mp3 format converted from MIDI using [t
 #### 12 chords of ninth
 
 + 3 major chords:
-   1. major add9 (ie major+9)
+
+1. major add9 (ie major+9)
    2. major maj9 (ie maj7 w/ 9)
    3. major 69 (ie 6 w/ 9)
 
+
 + 3 dominant 7 chords:
+
    4. major 9  (ie 7 w/ 9)
    5. major 7b9 (ie 7 w/ b9)
    6. major 7#9 (ie 7 w/ #9)
 
 + 4 minor chords:
+
    7. minor 9 (ie 7 w/ 9)
    8. minor 9b5 (ie demi-dimished7 w/ 9)
    9. minor maj9 (ie min maj7 w/ 9)
    10. minor 69 (ie min 6 w/ 9)
 
+
 + 2 suspended chords:
+
    11. sus4 9 (ie suspended4 7 w/ 9)
    12. sus4 b9 (ie suspended4 7 w/ b9)
 
