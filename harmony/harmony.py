@@ -46,6 +46,13 @@ possible_tetrads  = ['maj_7', 'maj_maj7', 'min_7' , 'min_maj7', 'sus4_7' ]
 possible_tetrads += ['aug_7', 'aug_maj7', 'ddim_7', 'dim_7', 'dim_maj7'  ]
 possible_tetrads += ['maj_6', 'min_6'   , 'min_min6']
 
+# Ninth chords
+possible_ninth  = ['maj_add9', 'maj_maj9', 'maj_69' ]
+possible_ninth += ['maj_9'   , 'maj_7b9' , 'maj_7d9']
+possible_ninth += ['min_9'   , 'min_9b5' , 'min_maj9', 'min_69']
+possible_ninth += ['sus4_9'  , 'sus4_b9' ]
+
+
 # Scale/modes names
 nice_scales_names = {
     'major'         : 'Major',
@@ -82,7 +89,7 @@ scales_intervals = {
     'lydian'        : ['un', '2M', '3M', '4+', '5J', '6M', '7M'],
     'myxolidian'    : ['un', '2M', '3M', '4J', '5J', '6M', '7m'],
     'eolian'        : ['un', '2M', '3m', '4J', '5J', '6m', '7m'],
-    'lorcian'       : ['un', ],
+    'lorcian'       : ['un', '2m', '3m', '4J', '5-', '6m', '7m' ],
 }
 
 
@@ -881,15 +888,17 @@ class extended_chords:
 
         # Chord to be extended
         if basis_nature in possible_triads:
-            self.basis_chord = triad.build(n1, nature)
+            self.basis_chord = triad.build(n1, basis_nature)
         elif basis_nature in possible_tetrads:
-            self.basis_chords = tetrad.build(n1, nature)
+            self.basis_chord = tetrad.build(n1, basis_nature)
         else:
-            raise NameError(f'extended_chords:: {nature} is not supported, only {possible_triads} and {possible_tetrads} are.')
+            txt  = f'extended_chords:: {basis_nature} is not supported'
+            txt += f', only {possible_triads} and {possible_tetrads} are.'
+            raise NameError(txt)
         
         # Extension notes
         self.extensions = [n1.note_of(interval) for interval in interval_ext_list]
- 
+        
         # Full list of notes
         self.notes_list = self.basis_chord.notes_list + self.extensions
 
@@ -897,11 +906,39 @@ class extended_chords:
     def lilypond_str(self):
         return  '<' + ' '.join([n.lilypond_str() for n in self.notes_list]) + '>'
 
-        
+    @classmethod
     def build(self, n1, nature):
         
+        if nature not in possible_ninth:
+            txt  = f'extended_chords:: {nature} is not supported'
+            txt += f', only {possible_ninth} are possible.'
+            raise NameError(txt)
 
-        
+        if nature == 'maj_add9':
+            return extended_chords(n1, 'maj', ['9M'])
+        elif nature == 'maj_maj9':
+            return extended_chords(n1, 'maj_maj7', ['9M'])
+        elif nature == 'maj_69':
+            return extended_chords(n1, 'maj_6', ['9M'])
+        elif nature == 'maj_9':
+            return extended_chords(n1, 'maj_7', ['9M'])
+        elif nature == 'maj_7b9':
+            return extended_chords(n1, 'maj_7', ['9m'])
+        elif nature == 'maj_7d9':
+            return extended_chords(n1, 'maj_7', ['9+'])
+        elif nature == 'min_9':
+            return extended_chords(n1, 'min_7', ['9M'])
+        elif nature == 'min_9b5':
+            return extended_chords(n1, 'ddim_7', ['9M'])
+        elif nature == 'min_maj9':
+            return extended_chords(n1, 'min_maj7', ['9M'])
+        elif nature == 'min_69':
+            return extended_chords(n1, 'min_6', ['9M'])
+        elif nature == 'sus4_9':
+            return extended_chords(n1, 'sus4_7', ['9M'])
+        elif nature == 'sus4_b9':
+            return extended_chords(n1, 'sus4_7', ['9m'])
+                
     
 class scale:
 
