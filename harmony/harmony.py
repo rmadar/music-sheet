@@ -6,7 +6,6 @@ tons_steps = [1, 1, 0.5, 1, 1, 1, 0.5]
 N_pitch = len(possible_pitchs)
 
 # Accepted alterations
-possible_alterations = ['b', '#', 'bb', '##', 'natural']
 alteration_values = {
     'b' : -0.5,
     '#' : +0.5,
@@ -14,30 +13,37 @@ alteration_values = {
     '##': +1.0,
     'natural': 0,
 }
+possible_alterations = [k for k in alteration_values.keys()]
 
 # Interval values (ton)
 interval_values = {
-    'un':   0,
-    '2m': 0.5,
-    '2M':   1,
-    '2+': 1.5,
-    '3m': 1.5,
-    '3M':   2,
-    '4J': 2.5,
-    '4+':   3,
-    '5-':   3,
-    '5J': 3.5,
-    '5+':   4,
-    '6m':   4,
-    '6M': 4.5,
-    '7-': 4.5,
-    '7m':   5,
-    '7M': 5.5,
-    '8J':   6,
-    '9m': 6.5,
-    '9M': 7.0,
-    '9+': 7.5,
+    'un' :    0,
+    '2m' :  0.5,
+    '2M' :    1,
+    '2+' :  1.5,
+    '3m' :  1.5,
+    '3M' :    2,
+    '4J' :  2.5,
+    '4+' :    3,
+    '5-' :    3,
+    '5J' :  3.5,
+    '5+' :    4,
+    '6m' :    4,
+    '6M' :  4.5,
+    '7-' :  4.5,
+    '7m' :    5,
+    '7M' :  5.5,
+    '8J' :    6,
+    '9m' :  6.5,
+    '9M' :  7.0,
+    '9+' :  7.5,
+    '11-':  8.0,
+    '11J':  8.5,
+    '11+':  9.0,
+    '13m': 11.0,
+    '13M': 10.5,
 }
+
 possible_intervals = [k for k in interval_values.keys()]
 
 # Triade/tetrads names
@@ -49,8 +55,19 @@ possible_tetrads += ['maj_6', 'min_6'   , 'min_min6']
 # Ninth chords
 possible_ninth  = ['maj_add9', 'maj_maj9', 'maj_69' ]
 possible_ninth += ['maj_9'   , 'maj_7b9' , 'maj_7d9']
-possible_ninth += ['min_9'   , 'min_9b5' , 'min_maj9', 'min_69']
+possible_ninth += ['min_9'   , 'ddmin_9' , 'min_maj9', 'min_69']
 possible_ninth += ['sus4_9'  , 'sus4_b9' ]
+
+# Eleventh chords
+possible_eleventh  = ['maj_maj7_d11', 'maj_maj9_d11']
+possible_eleventh += ['maj_7_d11', 'maj_9_d11', 'maj_7_b9_d11', 'maj_7_d9_d11' ]
+possible_eleventh += ['min_7_add11', 'min_11', 'ddmin_11' ]
+
+# Thirteenth chords
+possible_thirteenth  = ['maj_maj7_add13', 'maj_maj13', 'maj_maj13_d11']
+possible_thirteenth += ['maj_7_add13', 'maj_13', 'maj_13_b9', 'maj_13_d9', 'maj_7_b13_d9', 'maj_7_b13_b9' ]
+possible_thirteenth += ['min_7_add13', 'min_13']
+possible_thirteenth += ['sus4_13', 'sus4_9_b13', 'sus4_7_b9_b13']
 
 
 # Scale/modes names
@@ -264,12 +281,21 @@ class note:
         if interval == '8J':
             return self.shift_octave(+1)
 
+                
         # Number of notes to be incremented (eg. 1 for a second)
-        index_to_add = int(interval[0])-1
-
-        # diminished, just, augemented, major, minor
-        quality = interval[1]
-
+        # quality = diminished, just, augemented, major, minor
+        if len(interval) == 2:
+            index_to_add = int(interval[0])-1
+            quality = interval[1]
+        elif len(interval) == 3:
+            index_to_add = int(interval[0:2])-1
+            quality = interval[2]
+        else:
+            txt  = 'note_of()::ERROR "interval" neither 2 or 3 caracters while'
+            txt += '                 it should of 2 (e.g. "7M") or 3 (e.g. "11+")'
+            raise NameError(txt)
+        
+            
         # get the index of the current note
         index = possible_pitchs.index(self.pitch)
 
@@ -281,7 +307,7 @@ class note:
             new_index = index + index_to_add
             if new_index < N_pitch:
                 new_pitch = possible_pitchs[new_index]
-            else:
+            else: # If the note is one octave higher (e.g. 11th of C' would be F'')
                 new_pitch = possible_pitchs[new_index-N_pitch]
                 new_octave = self.octave + 1
                 
@@ -908,12 +934,14 @@ class extended_chords:
 
     @classmethod
     def build(self, n1, nature):
-        
-        if nature not in possible_ninth:
+
+        allowed_chords = possible_ninth + possible_eleventh + possible_thirteenth
+        if nature not in allowed_chords:
             txt  = f'extended_chords:: {nature} is not supported'
-            txt += f', only {possible_ninth} are possible.'
+            txt += f', only {allowed_chords}'
             raise NameError(txt)
 
+        # 9th Chords
         if nature == 'maj_add9':
             return extended_chords(n1, 'maj', ['9M'])
         elif nature == 'maj_maj9':
@@ -928,7 +956,7 @@ class extended_chords:
             return extended_chords(n1, 'maj_7', ['9+'])
         elif nature == 'min_9':
             return extended_chords(n1, 'min_7', ['9M'])
-        elif nature == 'min_9b5':
+        elif nature == 'ddmin_9':
             return extended_chords(n1, 'ddim_7', ['9M'])
         elif nature == 'min_maj9':
             return extended_chords(n1, 'min_maj7', ['9M'])
@@ -939,7 +967,58 @@ class extended_chords:
         elif nature == 'sus4_b9':
             return extended_chords(n1, 'sus4_7', ['9m'])
                 
-    
+        # Eleventh chords
+        elif nature == 'maj_maj7_d11':
+            return extended_chords(n1, 'maj_maj7', ['11+'])
+        elif nature == 'maj_maj9_d11':
+            return extended_chords(n1, 'maj_maj7', ['9M', '11+'])
+        elif nature == 'maj_7_d11':
+            return extended_chords(n1, 'maj_7', ['11+'])
+        elif nature == 'maj_9_d11':
+            return extended_chords(n1, 'maj_7', ['9M', '11+'])
+        elif nature == 'maj_7_b9_d11':
+            return extended_chords(n1, 'maj_7', ['9m', '11+'])
+        elif nature == 'maj_7_d9_d11':
+            return extended_chords(n1, 'maj_7', ['9+', '11+'])
+        elif nature == 'min_7_add11':
+            return extended_chords(n1, 'min_7', ['11J'])
+        elif nature == 'min_11':
+            return extended_chords(n1, 'min_7', ['9M','11J'])
+        elif nature == 'ddmin_11':
+            return extended_chords(n1, 'ddim_7', ['11J'])
+
+        # Thirteenth chords
+        elif nature == 'maj_maj7_add13':
+            return extended_chords(n1, 'maj_maj7', ['13M'])
+        elif nature == 'maj_maj13':
+            return extended_chords(n1, 'maj_maj7', ['9M', '13M'])
+        elif nature == 'maj_maj13_d11':
+            return extended_chords(n1, 'maj_maj7', ['9M', '11+', '13M'])
+        elif nature == 'maj_7_add13':
+            return extended_chords(n1, 'maj_7', ['13M'])
+        elif nature == 'maj_13':
+            return extended_chords(n1, 'maj_7', ['9M', '13M'])
+        elif nature == 'maj_13_b9':
+            return extended_chords(n1, 'maj_7', ['9m', '13M'])
+        elif nature == 'maj_13_d9':
+            return extended_chords(n1, 'maj_7', ['9+', '13M'])        
+        elif nature == 'maj_7_b13_b9':
+            return extended_chords(n1, 'maj_7', ['9m', '13m'])
+        elif nature == 'maj_7_b13_d9':
+            return extended_chords(n1, 'maj_7', ['9+', '13m'])
+        elif nature == 'min_7_add13':
+            return extended_chords(n1, 'min_7', ['13M'])
+        elif nature == 'min_13':
+            return extended_chords(n1, 'min_7', ['9M', '11J', '13M'])
+        elif nature == 'sus4_13':
+            return extended_chords(n1, 'sus4_7', ['9M', '13M'])
+        elif nature == 'sus4_9_b13':
+            return extended_chords(n1, 'sus4_7', ['9M', '13m'])
+        elif nature == 'sus4_7_b9_b13':
+            return extended_chords(n1, 'sus4_7', ['9m', '13m'])
+
+
+        
 class scale:
 
     def __init__(self, tonic, name):

@@ -30,6 +30,26 @@ class sheet:
           tagline  = "Generated with https://github.com/rmadar/music-sheet"
         }
         
+        % modify add11 and #11
+        % Exception music is chords with markups
+        chExceptionMusic = {
+        <c e g b fis'>- \markup {\super { \whiteTriangleMarkup " " \sharp11 } }
+        <c e g bes d' fis'>- \markup{\super {9\sharp11} }
+        <c ees g bes f'>-\markup {m\super "7 add11" }
+        <c e g b a'>- \markup {\super{ \whiteTriangleMarkup } \super{ " add13" } }
+        <c e g b d' a'>- \markup {\super{ \whiteTriangleMarkup} \super{ 13 } }
+        <c e g b d' fis' a'>- \markup {\super{ \whiteTriangleMarkup} \super{ 13 }  \super{ \sharp11 }  }
+        <c e g bes a'>-\markup {\super "7 add13" }
+        <c e g bes d' a'>-\markup {\super "13" }
+        <c ees g bes a'>-\markup {m\super "7 add13" }
+        <c f g bes d' a'>-\markup {\super "13 sus4" }
+        }
+        
+        % Convert music to list and prepend to existing exceptions.
+        chExceptions = #(append
+        (sequential-music-to-chord-exceptions chExceptionMusic #t)
+        ignatzekExceptions)
+        
         \layout {
           indent = 0\cm
           \context {
@@ -141,6 +161,9 @@ class staff:
         \t{
         \t\t
         '''
+        if clef.lower() == 'chords':
+            txt += '\t\\set chordNameExceptions = #chExceptions'
+
         if clef.lower() != 'drum' and clef.lower() != 'rythmic' and clef.lower() != 'chords':
             txt += '\t\t \\clef {}\n'.format(self.clef)
 
