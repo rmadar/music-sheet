@@ -3,7 +3,9 @@
 This repository holds a simple (WIP) python interface to generate music sheets using [Lylipond](http://lilypond.org/),
 and export the corresponding audio file (mp3 format converted from MIDI using [timidity](https://launchpad.net/ubuntu/hirsute/+package/timidity)). This tool depends naturally on these two softwares.
 
-## Practicing triad/tetrads chords and scales 
+## Chords and scales 
+
+![image](harmony/all_chords.png)
 
 ### What is implemented?
 
