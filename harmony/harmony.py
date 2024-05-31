@@ -1,4 +1,5 @@
 import numpy as np
+import copy
 
 # Accepted pitch
 possible_pitchs = ['c', 'd', 'e', 'f', 'g', 'a', 'b']
@@ -40,7 +41,7 @@ interval_values = {
     '11-':  8.0,
     '11J':  8.5,
     '11+':  9.0,
-    '13m': 11.0,
+    '13m': 10.0,
     '13M': 10.5,
 }
 
@@ -305,11 +306,18 @@ class note:
         # In case of ascending interval
         if not descending:
             new_index = index + index_to_add
-            if new_index < N_pitch:
+            if new_index < N_pitch  :
                 new_pitch = possible_pitchs[new_index]
-            else: # If the note is one octave higher (e.g. 11th of C' would be F'')
+            elif new_index < 2*N_pitch: # If the note is one octave higher (e.g. 11th of C' would be F'')
                 new_pitch = possible_pitchs[new_index-N_pitch]
                 new_octave = self.octave + 1
+            elif new_index < 3*N_pitch: # If the note is two octaves higher (e.g. 11th of G' would be E''')
+                new_pitch = possible_pitchs[new_index-2*N_pitch]
+                new_octave = self.octave + 2
+            else:
+                txt  = f'\nNote::note_of():: Cannot be more than two octaves, while\n'
+                txt += f'                    it seems to be the case for the {interval} of {self}.'
+                raise NameError()
                 
         # In case of descending interval
         else:
@@ -929,6 +937,17 @@ class extended_chords:
         self.notes_list = self.basis_chord.notes_list + self.extensions
 
 
+    def shift_octave(self, i):
+        '''
+        Shift all the note from i octaves (i: postive/negative integer)
+        '''
+        ext = copy.deepcopy(self)
+        ext.basis_chord = self.basis_chord.shift_octave(i)
+        ext.extensions = [n.shift_octave(i) for n in self.extensions]
+        ext.notes_list = ext.basis_chord.notes_list + ext.extensions
+        return ext
+
+        
     def lilypond_str(self):
         return  '<' + ' '.join([n.lilypond_str() for n in self.notes_list]) + '>'
 
